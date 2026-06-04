@@ -64,14 +64,20 @@ if dose and dose > 0 and pump_vol:
     
     # Concentration calculation
     concentration = dose_overfill_rounded / vol_overfill
+
+    drug_vol = dose_overfill_rounded / 50
+
+    ns_vol = vol_overfill - drug_vol
 else:
     dose_overfill = 0.0
     dose_overfill_rounded = 0
     concentration = 0.0
+    drug_vol = 0
+    ns_vol = 0
 
 # Display Results
 st.markdown("---")
-st.subheader("Calculation Outputs")
+st.subheader("For Verification")
 
 col_m1, col_m2, col_m3 = st.columns(3)
 with col_m1:
@@ -88,3 +94,18 @@ with h_col1:
 
 with h_col2:
     st.success(f"**Final Concentration:**\n\n ## `{concentration:.1f} mg/mL`")
+
+st.markdown("---")
+st.subheader("For Compounding")
+
+h_col1, h_col2 = st.columns(2)
+
+# Formatted variables using :g to dynamically remove trailing zeros
+formatted_drug_vol = f"{drug_vol:g}" if drug_vol else "0"
+formatted_ns_vol = f"{ns_vol:g}" if ns_vol else "0"
+
+with h_col1:
+    st.info(f"**Volume of 5-FU:**\n\n ## `{formatted_drug_vol} mL`")
+
+with h_col2:
+    st.success(f"**Volume of NS:**\n\n ## `{formatted_ns_vol} mL`")
