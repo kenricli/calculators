@@ -68,7 +68,7 @@ with col_m3:
 h_col1, h_col2 = st.columns(2)
 
 with h_col1:
-    st.info(f"**Dose w/ Overfill (Rounded to Nearest 50 mg):**\n\n ## `{dose_overfill_rounded} mg`")
+    st.info(f"**Dose w/ Overfill (Rounded to the nearest 50 mg):**\n\n ## `{dose_overfill_rounded} mg`")
 
 with h_col2:
     st.success(f"**Final Concentration:**\n\n ## `{concentration:.1f} mg/mL`")
