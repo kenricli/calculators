@@ -29,9 +29,9 @@ if dose is not None:
 # Overfill volume matching logic
 vol_overfill = ""
 if pump_vol == 92:
-    vol_overfill = 94.0
+    vol_overfill = 94
 elif pump_vol == 96:
-    vol_overfill = 98.0
+    vol_overfill = 98
 elif pump_vol == 192:
     vol_overfill = 195.5
 elif pump_vol == 230:
