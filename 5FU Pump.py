@@ -98,6 +98,8 @@ with h_col2:
 st.markdown("---")
 st.subheader("For Compounding")
 
+st.metric(label="Pump Volume w/ Overfill", value=f"{vol_overfill} mL" if vol_overfill else "-")
+
 h_col1, h_col2 = st.columns(2)
 
 # Formatted variables using :g to dynamically remove trailing zeros
