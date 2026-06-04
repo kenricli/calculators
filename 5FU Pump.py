@@ -10,11 +10,16 @@ with col1:
     dose = st.number_input("Enter Dose (mg)", min_value=0.0, value=None)
 with col2:
     duration = st.selectbox("Select Duration (hr)", options=[24, 46, 48, 96, 120], index=2)
+    # Highlighted Change: Added the override checkbox right below the duration dropdown
+    override_pump = st.checkbox("Override Pump to 240 mL")
 
 # Excel-based Formula Logic
 pump_vol = ""
-# Ensure dose is not None before doing comparisons
-if dose is not None:
+
+# Determine pump volume based on logic OR override
+if override_pump:
+    pump_vol = 240
+elif dose is not None:  # Ensure dose is not None before doing comparisons
     if duration == 24:
         pump_vol = 240
     elif duration == 96:
