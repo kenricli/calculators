@@ -6,20 +6,31 @@ st.title("🧪 5-FU Infusion Pump Calculator")
 # Input Fields
 col1, col2 = st.columns(2)
 with col1:
-    # Set value to None for a blank starting input, and removed the step parameter
+    # Set value to None for a blank starting input.
+    # Using format="%g" strips trailing zeros for whole numbers but preserves decimals.
     dose = st.number_input("Enter Dose (mg)", min_value=0.0, value=None, format="%g")
 with col2:
     duration = st.selectbox("Select Duration (hr)", options=[24, 46, 48, 96, 120], index=2)
-    # Highlighted Change: Added the override checkbox right below the duration dropdown
-    override_pump = st.checkbox("Override Pump to 240 mL")
+    
+    # Updated Checkbox Label to reflect the dynamic logic
+    override_pump = st.checkbox("Pump Shortage? Override Pump Volume!")
 
 # Excel-based Formula Logic
 pump_vol = ""
 
-# Determine pump volume based on logic OR override
+# Updated Logic: Check the override conditions first based on selected duration
 if override_pump:
-    pump_vol = 240
-elif dose is not None:  # Ensure dose is not None before doing comparisons
+    if duration == 46:
+        pump_vol = 230
+    elif duration == 48:
+        pump_vol = 240
+    else:
+        # Visual cue in case someone checks the box on an unsupported duration
+        st.warning("Override is only applicable for 46 hr or 48 hr durations.")
+        override_pump = False  # Deactivate logic fallback
+
+# Standard logic runs if override is not checked or not applicable
+if not override_pump and dose is not None:
     if duration == 24:
         pump_vol = 240
     elif duration == 96:
