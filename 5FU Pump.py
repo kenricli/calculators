@@ -6,22 +6,25 @@ st.title("🧪 5-FU Infusion Pump Calculator")
 # Input Fields
 col1, col2 = st.columns(2)
 with col1:
-    dose = st.number_input("Enter Dose (mg)", min_value=0.0, step=50.0, value=0.0)
+    # Set value to None for a blank starting input, and removed the step parameter
+    dose = st.number_input("Enter Dose (mg)", min_value=0.0, value=None)
 with col2:
     duration = st.selectbox("Select Duration (hr)", options=[24, 46, 48, 96, 120], index=1)
 
 # Excel-based Formula Logic
 pump_vol = ""
-if duration == 24:
-    pump_vol = 240
-elif duration == 96:
-    pump_vol = 192
-elif duration == 120:
-    pump_vol = 240
-elif duration == 48:
-    pump_vol = 240 if dose > 4600 else 96
-elif duration == 46:
-    pump_vol = 230 if dose > 4400 else 92
+# Ensure dose is not None before doing comparisons
+if dose is not None:
+    if duration == 24:
+        pump_vol = 240
+    elif duration == 96:
+        pump_vol = 192
+    elif duration == 120:
+        pump_vol = 240
+    elif duration == 48:
+        pump_vol = 240 if dose > 4600 else 96
+    elif duration == 46:
+        pump_vol = 230 if dose > 4400 else 92
 
 # Overfill volume matching logic
 vol_overfill = ""
@@ -37,7 +40,7 @@ elif pump_vol == 240:
     vol_overfill = 243.5
 
 # Math Calculations
-if dose > 0 and pump_vol:
+if dose and dose > 0 and pump_vol:
     dose_overfill = dose * (vol_overfill / pump_vol)
     
     # NEW LOGIC: Round to the nearest 50
@@ -60,7 +63,7 @@ with col_m1:
 with col_m2:
     st.metric(label="Pump Volume w/ Overfill", value=f"{vol_overfill} mL" if vol_overfill else "-")
 with col_m3:
-    st.metric(label="Dose w/ Overfill", value=f"{dose_overfill:.1f} mg")
+    st.metric(label="Dose w/ Overfill", value=f"{dose_overfill:.1f} mg" if dose_overfill else "-")
 
 # Highlighted Target Outputs
 st.markdown("### 🎯 Highlighted Pharmacy Metrics")
