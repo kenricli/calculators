@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.set_page_config(page_title="5FU Pump Calculator", layout="centered")
+st.set_page_config(page_title="5-FU Infusion Pump Calculator", layout="centered")
 st.title("🧪 5-FU Infusion Pump Calculator")
 
 # Input Fields
@@ -70,7 +70,7 @@ st.markdown("### 🎯 Highlighted Pharmacy Metrics")
 h_col1, h_col2 = st.columns(2)
 
 with h_col1:
-    st.info(f"**Dose w/ Overfill Rounded (Nearest 50)**\n\n ## `{dose_overfill_rounded} mg`")
+    st.info(f"**Dose w/ Overfill Rounded (Nearest 50 mg)**\n\n ## `{dose_overfill_rounded} mg`")
 
 with h_col2:
     st.success(f"**Final Concentration**\n\n ## `{concentration:.1f} mg/mL`")
