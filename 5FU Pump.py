@@ -58,7 +58,7 @@ elif pump_vol == 240:
 # Selecting Pump
 pump_type = ""
 if duration == 24:
-    pump_type = "SmartEZ 10 mL/hr 270 mL (Light Green)"
+    pump_type = "SmartEZ 10 mL/hr 270 mL (Green)"
 elif duration == 96:
     pump_type = "SmartEZ 2 mL/hr 270 mL (Yellow)"
 elif duration == 120:
