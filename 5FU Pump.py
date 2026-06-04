@@ -55,6 +55,23 @@ elif pump_vol == 230:
 elif pump_vol == 240:
     vol_overfill = 243.5
 
+# Selecting Pump
+pump_type = ""
+if duration == 24:
+    pump_type = "SmartEZ 10 mL/hr 270 mL :green[(Light Green)]"
+elif duration == 96:
+    pump_type = "SmartEZ 2 mL/hr 270 mL (Yellow)"
+elif duration == 120:
+    pump_type = "SmartEZ 2 mL/hr 270 mL (Yellow)"
+elif pump_vol == 92:
+    pump_type = "SmartEZ 2 mL/hr 100 mL (Yellow)"
+elif pump_vol == 96:
+    pump_type = "SmartEZ 2 mL/hr 100 mL (Yellow)"
+elif pump_vol == 230:
+    pump_type = "SmartEZ 5 mL/hr 270 mL (Brown)"
+elif pump_vol == 240:
+    pump_type = "SmartEZ 5 mL/hr 270 mL (Brown)"
+
 # Math Calculations
 if dose and dose > 0 and pump_vol:
     dose_overfill = dose * (vol_overfill / pump_vol)
@@ -98,7 +115,11 @@ with h_col2:
 st.markdown("---")
 st.subheader("For Compounding")
 
-st.metric(label="Pump Volume w/ Overfill", value=f"{vol_overfill} mL" if vol_overfill else "-")
+col_m1, col_m2 = st.columns(2)
+with col_m1:
+    st.metric(label="Pump Volume w/ Overfill", value=f"{vol_overfill} mL" if vol_overfill else "-")
+with col_m2:
+    st.metric(label="Pump Type", value=f"{pump_type}" if pump_type else "-")
 
 h_col1, h_col2 = st.columns(2)
 
