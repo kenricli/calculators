@@ -65,7 +65,6 @@ with col_m2:
 with col_m3:
     st.metric(label="Dose w/ Overfill", value=f"{dose_overfill:.1f} mg" if dose_overfill else "-")
 
-# Highlighted Target Outputs
 h_col1, h_col2 = st.columns(2)
 
 with h_col1:
