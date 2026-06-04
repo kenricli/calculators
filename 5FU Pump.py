@@ -129,7 +129,7 @@ with col_m2:
         """, 
         unsafe_allow_html=True
     )
-st.text(" ")
+st.space(size="small")
 h_col1, h_col2 = st.columns(2)
 
 # Formatted variables using :g to dynamically remove trailing zeros
