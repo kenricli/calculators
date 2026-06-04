@@ -116,22 +116,35 @@ st.markdown("---")
 st.subheader("For Compounding")
 
 col_m1, col_m2 = st.columns(2)
+
+# Shared styling variable to keep font sizes and styles perfectly locked together
+label_style = "font-size: 0.9rem; color: #ffffff;"
+value_style = "font-size: 2rem; font-weight: bold; line-height: 1.4; word-wrap: break-word; white-space: normal;"
+
 with col_m1:
-    st.metric(label="Pump Volume w/ Overfill", value=f"{vol_overfill} mL" if vol_overfill else "-")
-with col_m2:
-    # Wrapped in HTML with CSS styles to force wrapping if the text is too long
+    # Changed from st.metric to identical HTML structure
     st.markdown(
         f"""
-        **Pump Type**
-        <div style="font-size: 1.5rem; font-weight: bold; line-height: 1.4; word-wrap: break-word; white-space: normal;">
+        <div style="{label_style}">Pump Volume w/ Overfill</div>
+        <div style="{value_style}">
+            {f"{vol_overfill} mL" if vol_overfill else '-'}
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+with col_m2:
+    # Matches col_m1 perfectly
+    st.markdown(
+        f"""
+        <div style="{label_style}">Pump Type</div>
+        <div style="{value_style}">
             {pump_type if pump_type else '-'}
         </div>
         """, 
         unsafe_allow_html=True
     )
 
-# Note: st.space is not native to Streamlit. If it's a custom helper function, leave it.
-# Otherwise, you can use st.markdown("<br>", unsafe_allow_html=True) if it throws an error.
 try:
     st.space(size="small")
 except AttributeError:
