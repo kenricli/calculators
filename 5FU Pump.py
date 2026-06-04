@@ -7,7 +7,7 @@ st.title("🧪 5-FU Infusion Pump Calculator")
 col1, col2 = st.columns(2)
 with col1:
     # Set value to None for a blank starting input, and removed the step parameter
-    dose = st.number_input("Enter Dose (mg)", min_value=0.0, value=None)
+    dose = st.number_input("Enter Dose (mg)", min_value=0.0, value=None, format="%g)
 with col2:
     duration = st.selectbox("Select Duration (hr)", options=[24, 46, 48, 96, 120], index=2)
     # Highlighted Change: Added the override checkbox right below the duration dropdown
