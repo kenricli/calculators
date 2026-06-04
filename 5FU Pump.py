@@ -119,7 +119,7 @@ col_m1, col_m2 = st.columns(2)
 
 # Shared styling variable to keep font sizes and styles perfectly locked together
 label_style = "font-size: 0.9rem; color: #ffffff;"
-value_style = "font-size: 2rem; font-weight: bold; line-height: 1.4; word-wrap: break-word; white-space: normal;"
+value_style = "font-size: 2rem; line-height: 1.4; word-wrap: break-word; white-space: normal;"
 
 with col_m1:
     # Changed from st.metric to identical HTML structure
