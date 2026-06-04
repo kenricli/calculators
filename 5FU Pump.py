@@ -9,7 +9,7 @@ with col1:
     # Set value to None for a blank starting input, and removed the step parameter
     dose = st.number_input("Enter Dose (mg)", min_value=0.0, value=None)
 with col2:
-    duration = st.selectbox("Select Duration (hr)", options=[24, 46, 48, 96, 120], index=1)
+    duration = st.selectbox("Select Duration (hr)", options=[24, 46, 48, 96, 120], index=2)
 
 # Excel-based Formula Logic
 pump_vol = ""
