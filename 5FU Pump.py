@@ -119,7 +119,16 @@ col_m1, col_m2 = st.columns(2)
 with col_m1:
     st.metric(label="Pump Volume w/ Overfill", value=f"{vol_overfill} mL" if vol_overfill else "-")
 with col_m2:
-    st.metric(label="Pump Type", value=f"{pump_type}" if pump_type else "-")
+    # Wrapped in HTML with CSS styles to force wrapping if the text is too long
+    st.markdown(
+        f"""
+        **Pump Type**
+        <div style="font-size: 1.5rem; font-weight: bold; line-height: 1.4; word-wrap: break-word; white-space: normal;">
+            {pump_type if pump_type else '-'}
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
 
 h_col1, h_col2 = st.columns(2)
 
