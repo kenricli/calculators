@@ -55,22 +55,22 @@ elif pump_vol == 230:
 elif pump_vol == 240:
     vol_overfill = 243.5
 
-# Selecting Pump
+# Selecting Pump with colored HTML styling
 pump_type = ""
 if duration == 24:
-    pump_type = "SmartEZ 10 mL/hr 270 mL (Green)"
+    pump_type = 'SmartEZ 10 mL/hr 270 mL <span style="color: #2e7d32;">(Green)</span>'
 elif duration == 96:
-    pump_type = "SmartEZ 2 mL/hr 270 mL (Yellow)"
+    pump_type = 'SmartEZ 2 mL/hr 270 mL <span style="color: #fbc02d;">(Yellow)</span>'
 elif duration == 120:
-    pump_type = "SmartEZ 2 mL/hr 270 mL (Yellow)"
+    pump_type = 'SmartEZ 2 mL/hr 270 mL <span style="color: #fbc02d;">(Yellow)</span>'
 elif pump_vol == 92:
-    pump_type = "SmartEZ 2 mL/hr 100 mL (Yellow)"
+    pump_type = 'SmartEZ 2 mL/hr 100 mL <span style="color: #fbc02d;">(Yellow)</span>'
 elif pump_vol == 96:
-    pump_type = "SmartEZ 2 mL/hr 100 mL (Yellow)"
+    pump_type = 'SmartEZ 2 mL/hr 100 mL <span style="color: #fbc02d;">(Yellow)</span>'
 elif pump_vol == 230:
-    pump_type = "SmartEZ 5 mL/hr 270 mL (Brown)"
+    pump_type = 'SmartEZ 5 mL/hr 270 mL <span style="color: #8d6e63;">(Brown)</span>'
 elif pump_vol == 240:
-    pump_type = "SmartEZ 5 mL/hr 270 mL (Brown)"
+    pump_type = 'SmartEZ 5 mL/hr 270 mL <span style="color: #8d6e63;">(Brown)</span>'
 
 # Math Calculations
 if dose and dose > 0 and pump_vol:
@@ -129,7 +129,14 @@ with col_m2:
         """, 
         unsafe_allow_html=True
     )
-st.space(size="small")
+
+# Note: st.space is not native to Streamlit. If it's a custom helper function, leave it.
+# Otherwise, you can use st.markdown("<br>", unsafe_allow_html=True) if it throws an error.
+try:
+    st.space(size="small")
+except AttributeError:
+    pass
+
 h_col1, h_col2 = st.columns(2)
 
 # Formatted variables using :g to dynamically remove trailing zeros
