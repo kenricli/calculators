@@ -1,7 +1,7 @@
 import streamlit as st
 
-st.set_page_config(page_title="SmartEZ Pump Calculator", page_icon="🧪", layout="centered")
-st.title("🧪 SmartEZ Pump Calculator")
+st.set_page_config(page_title="SMARTeZ Pump Calculator", page_icon="🧪", layout="centered")
+st.title("🧪 SMARTeZ Pump Calculator")
 st.markdown("### 5-FU Dose Calculation")
 st.write("Calculate the 5-FU dose with overfill based on pump type.")
 
@@ -17,13 +17,13 @@ OVERFILL_MAP = {
 }
 
 PUMP_TYPE_MAP = {
-    (24, None): 'SmartEZ 10 mL/hr 270 mL <span style="color: #2e7d32;">(Green)</span>',
-    (96, None): 'SmartEZ 2 mL/hr 270 mL <span style="color: #fbc02d;">(Yellow)</span>',
-    (120, None): 'SmartEZ 2 mL/hr 270 mL <span style="color: #fbc02d;">(Yellow)</span>',
-    (None, 92): 'SmartEZ 2 mL/hr 100 mL <span style="color: #fbc02d;">(Yellow)</span>',
-    (None, 96): 'SmartEZ 2 mL/hr 100 mL <span style="color: #fbc02d;">(Yellow)</span>',
-    (None, 230): 'SmartEZ 5 mL/hr 270 mL <span style="color: #8d6e63;">(Brown)</span>',
-    (None, 240): 'SmartEZ 5 mL/hr 270 mL <span style="color: #8d6e63;">(Brown)</span>'
+    (24, None): 'SMARTeZ 10 mL/hr 270 mL <span style="color: #2e7d32;">(Green)</span>',
+    (96, None): 'SMARTeZ 2 mL/hr 270 mL <span style="color: #fbc02d;">(Yellow)</span>',
+    (120, None): 'SMARTeZ 2 mL/hr 270 mL <span style="color: #fbc02d;">(Yellow)</span>',
+    (None, 92): 'SMARTeZ 2 mL/hr 100 mL <span style="color: #fbc02d;">(Yellow)</span>',
+    (None, 96): 'SMARTeZ 2 mL/hr 100 mL <span style="color: #fbc02d;">(Yellow)</span>',
+    (None, 230): 'SMARTeZ 5 mL/hr 270 mL <span style="color: #8d6e63;">(Brown)</span>',
+    (None, 240): 'SMARTeZ 5 mL/hr 270 mL <span style="color: #8d6e63;">(Brown)</span>'
 }
 
 # --- Input Fields ---
