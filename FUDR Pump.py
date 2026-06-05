@@ -63,7 +63,7 @@ with col2:
     )
     
     # Dynamic Pump Volume Visual Indicator
-    st.text_input("Pump Volume", value=f"{int(pump_volume)} mL", disabled=False)
+    st.text_input("Pump Volume (Fixed for selected pump)", value=f"{int(pump_volume)} mL", disabled=True)
 
 st.divider()
 
