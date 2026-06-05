@@ -29,7 +29,7 @@ PUMP_TYPE_MAP = {
 # --- Input Fields ---
 col1, col2 = st.columns(2)
 with col1:
-    dose = st.number_input("Enter Dose (mg)", min_value=0.0, value=None, format="%g")
+    dose = st.number_input("Enter Dose (mg)", min_value=0.0, value=None, format="%g", placeholder="Enter weight...")
 with col2:
     duration = st.selectbox("Select Duration (hr)", options=[24, 46, 48, 96, 120], index=None)
     override_pump = st.checkbox("Pump Shortage? Override Pump Volume!")
