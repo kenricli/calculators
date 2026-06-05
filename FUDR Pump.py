@@ -104,7 +104,7 @@ else:
                 min_value=0.00,
                 max_value=2.00,
                 value=None,
-                format="%.2f"
+                format="%.2f",
                 placeholder="Enter dose..."
             )
         else:
