@@ -160,9 +160,9 @@ else:
         
         # Display dynamic context alert
         if is_overweight:
-            st.warning(f"⚠️ Patient is >35% over IBW. Using **Average Body Weight (ABW)**: {dosing_weight:.1f} kg (IBW: {ibw:.1f} kg).")
+            st.warning(f"⚠️ Patient is >35% over IBW. Using **Average Body Weight**: {dosing_weight:.1f} kg (IBW: {ibw:.1f} kg).")
         else:
-            st.info(f"✅ Patient weight is within standard dosing limits. Using **Actual Weight**: {real_weight} kg (IBW: {ibw:.1f} kg).")
+            st.info(f"✅ Patient weight is within standard dosing limits. Using **Actual Body Weight**: {real_weight} kg (IBW: {ibw:.1f} kg).")
             
         # --- Summary Section ---
         st.subheader("📋 Order & Compounding Summary")
