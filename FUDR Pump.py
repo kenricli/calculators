@@ -57,8 +57,8 @@ with col2:
     # Gender selection for IBW calculation (Defaulted to blank)
     gender = st.selectbox(
         "Patient Gender",
-        options=[None, "Male", "Female"],
-        index=0,
+        options=["Male", "Female"],
+        index=None,
         placeholder="Select gender..."
     )
 
