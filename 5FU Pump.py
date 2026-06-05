@@ -43,7 +43,7 @@ if override_pump:
     elif duration == 48:
         pump_vol = 240
     else:
-        st.warning("Override is only applicable for 46 hr or 48 hr durations.")
+        st.warning("⚠️ Override is only applicable for 46 hr or 48 hr durations.")
         override_pump = False
 
 # Fall back to standard logic if override isn't active/applicable
