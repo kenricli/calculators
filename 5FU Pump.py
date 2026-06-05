@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.set_page_config(page_title="5-FU Infusion Pump Calculator", layout="centered")
+st.set_page_config(page_title="5-FU Infusion Pump Calculator", page_icon="🧪", layout="centered")
 st.title("🧪 5-FU Infusion Pump Calculator")
 
 # --- Configuration Mappings ---
