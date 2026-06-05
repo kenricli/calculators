@@ -35,14 +35,12 @@ else:  # Medtronic
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    # Patient Weight Input (Real Weight)
-    real_weight = st.number_input(
-        "Patient Weight (kg)", 
-        min_value=0.0, 
-        max_value=250.0, 
-        value=None,  # This leaves the input field empty on load
-        format="%g",
-        placeholder="Enter weight...",
+    # Gender selection for IBW calculation (Defaulted to blank) - MOVED TO FIRST
+    gender = st.selectbox(
+        "Patient Gender",
+        options=["Male", "Female"],
+        index=None,
+        placeholder="Select gender..."
     )
     
     # Dosing Multiplier Dropdown
@@ -54,12 +52,14 @@ with col1:
     )
 
 with col2:
-    # Gender selection for IBW calculation (Defaulted to blank)
-    gender = st.selectbox(
-        "Patient Gender",
-        options=["Male", "Female"],
-        index=None,
-        placeholder="Select gender..."
+    # Patient Weight Input (Real Weight)
+    real_weight = st.number_input(
+        "Patient Weight (kg)", 
+        min_value=0.0, 
+        max_value=250.0, 
+        value=None,  # This leaves the input field empty on load
+        format="%g",
+        placeholder="Enter weight...",
     )
 
     # Pump Flow Rate Dropdown
