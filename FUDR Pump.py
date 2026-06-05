@@ -8,7 +8,7 @@ st.set_page_config(
 )
 
 # App Title and Description
-st.title("🩺 FUDR Pump Dose Calculator")
+st.title("🩺 FUDR Pump Calculator")
 st.markdown("### FUDR Dose Calculation (1 Cycle = 28 Days)")
 st.write("Calculate the required FUDR dose and compounding components for **Days 1–14** based on pump type.")
 
