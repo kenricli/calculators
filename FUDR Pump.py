@@ -8,46 +8,93 @@ st.set_page_config(
     layout="centered"
 )
 
-# App Title and Description
-st.title("🩺 HAI Pump Calculator")
-st.markdown("### FUDR Dose Calculation (1 Cycle = 28 Days)")
-st.write("Calculate the required FUDR dose and compounding components for **Days 1–14** based on pump type.")
+# --- 1. Session State Initialization for Disclaimer ---
+if "disclaimer_agreed" not in st.session_state:
+    st.session_state.disclaimer_agreed = None
 
-st.divider()
-
-# 1. Pump Type Selection Dropdown
-pump_type = st.selectbox(
-    "Select Pump Type",
-    options=["Intera (Codman)", "Medtronic"],
-    index=0,
-)
-
-# Mapping pump specifications cleanly via dictionary lookup
-PUMP_SPECS = {
-    "Intera (Codman)": {"volume": 30.0, "dex": "25 mg", "heparin": "30,000 units"},
-    "Medtronic": {"volume": 20.0, "dex": "20 mg", "heparin": "25,000 units"}
-}
-
-specs = PUMP_SPECS[pump_type]
-pump_volume = specs["volume"]
-
-# Create three columns for neat input alignment
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    gender = st.selectbox(
-        "Patient Gender",
-        options=["Male", "Female"],
-        index=None,
-        placeholder="Select gender..."
+# --- 2. Disclaimer View Logic ---
+if st.session_state.disclaimer_agreed is None:
+    st.title("🩺 HAI Pump Calculator")
+    st.subheader("⚠️ Medical Disclaimer & Terms of Use")
+    
+    st.warning(
+        "**CRITICAL NOTICE:** This calculator is intended for reference and educational "
+        "purposes only. It should not be used as the sole basis for clinical decision-making, "
+        "nor should it replace professional medical judgment, hospital protocols, or independent "
+        "double-checks by qualified healthcare professionals."
     )
     
-    dose_rate = st.selectbox(
-        "Dosing Multiplier (mg/kg)", 
-        options=[0.12, 0.08, 0.06],
-        index=0,
-        format_func=lambda x: f"{x} mg/kg"
+    st.markdown(
+        """
+        By proceeding, you acknowledge and agree that:
+        * You will **manually verify all dosage calculations** and drug compounding values against official protocols.
+        * The creators of this tool assume no clinical or legal liability for dosing errors or patient outcomes.
+        """
     )
+    
+    st.write("Do you agree to these terms and wish to proceed with the calculator?")
+    
+    # Bottom alignment buttons
+    d_col1, d_col2 = st.columns(2)
+    with d_col1:
+        if st.button("🤝 I Agree", use_container_width=True, type="primary"):
+            st.session_state.disclaimer_agreed = True
+            st.rerun()
+            
+    with d_col2:
+        if st.button("❌ Disagree / Exit", use_container_width=True):
+            st.session_state.disclaimer_agreed = False
+            st.rerun()
+
+elif st.session_state.disclaimer_agreed is False:
+    st.title("🩺 HAI Pump Calculator")
+    st.error("🔒 Access Denied. You must agree to the medical disclaimer terms to utilize this calculator.")
+    if st.button("Return to Disclaimer screen"):
+        st.session_state.disclaimer_agreed = None
+        st.rerun()
+
+# --- 3. Main Calculator Application View (Only renders if agreed) ---
+else:
+    # App Title and Description
+    st.title("🩺 HAI Pump Calculator")
+    st.markdown("### FUDR Dose Calculation (1 Cycle = 28 Days)")
+    st.write("Calculate the required FUDR dose and compounding components for **Days 1–14** based on pump type.")
+
+    st.divider()
+
+    # 1. Pump Type Selection Dropdown
+    pump_type = st.selectbox(
+        "Select Pump Type",
+        options=["Intera (Codman)", "Medtronic"],
+        index=0,
+    )
+
+    # Mapping pump specifications cleanly via dictionary lookup
+    PUMP_SPECS = {
+        "Intera (Codman)": {"volume": 30.0, "dex": "25 mg", "heparin": "30,000 units"},
+        "Medtronic": {"volume": 20.0, "dex": "20 mg", "heparin": "25,000 units"}
+    }
+
+    specs = PUMP_SPECS[pump_type]
+    pump_volume = specs["volume"]
+
+    # Create three columns for neat input alignment
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        gender = st.selectbox(
+            "Patient Gender",
+            options=["Male", "Female"],
+            index=None,
+            placeholder="Select gender..."
+        )
+        
+        dose_rate = st.selectbox(
+            "Dosing Multiplier (mg/kg)", 
+            options=[0.12, 0.08, 0.06],
+            index=0,
+            format_func=lambda x: f"{x} mg/kg"
+        )
 
 with col2:
     real_weight = st.number_input(
@@ -76,7 +123,7 @@ with col3:
         placeholder="Enter height..."
     )
     
-    # Modernized indicator using st.metric instead of an entry field
+    # Indicator using st.metric instead of an entry field
     st.metric(label="Pump Volume (Fixed)", value=f"{int(pump_volume)} mL")
 
 st.divider()
@@ -105,7 +152,7 @@ def calculate_fudr_dose(gender, height_cm, real_weight, dose_rate, pump_volume, 
     return ibw, dosing_weight, is_overweight, raw_fudr_dose, final_fudr_dose
 
 # --- Conditional Layout Execution ---
-if real_weight and height_cm and gender:
+if 'gender' in locals() and real_weight and height_cm and gender:
     
     ibw, dosing_weight, is_overweight, raw_fudr_dose, final_fudr_dose = calculate_fudr_dose(
         gender, height_cm, real_weight, dose_rate, pump_volume, flow_rate
@@ -144,5 +191,5 @@ if real_weight and height_cm and gender:
         "Verify the pump's unique serial number, patient ID card, or sticker to confirm the accurate flow rate before preparation."
     )
 
-else:
+elif 'gender' in locals():
     st.warning("⚠️ Please enter patient weight, height, and select a gender to generate the dosage calculations and compounding summary.")
