@@ -134,8 +134,6 @@ if real_weight is not None and real_weight > 0 and height_cm is not None and hei
     m_col2.metric(
         label="Final FUDR Dose (Rounded to nearest 5 mg)", 
         value=f"{final_fudr_dose} mg",
-        delta=f"{final_fudr_dose - raw_fudr_dose:+.2f} mg rounding adjustment",
-        delta_color="off"
     )
 
     # Display standard mixture table
