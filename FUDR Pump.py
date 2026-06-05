@@ -107,10 +107,10 @@ if real_weight is not None and real_weight > 0 and height_cm is not None and hei
     if is_overweight:
         # Calculate Average Body Weight (ABW)
         dosing_weight = (ibw + real_weight) / 2.0
-        weight_status_msg = f"⚠️ Patient is >35% over IBW. Using **Average Body Weight (ABW)**: {dosing_weight:.2f} kg (IBW: {ibw:.1f} kg)."
+        weight_status_msg = f"⚠️ Patient is >35% over IBW. Using **Average Body Weight (ABW)**: {dosing_weight:.1f} kg (IBW: {ibw:.1f} kg)."
     else:
         dosing_weight = real_weight
-        weight_status_msg = f"✅ Patient weight is within standard dosing limits. Using **Real Weight**: {real_weight} kg (IBW: {ibw:.1f} kg)."
+        weight_status_msg = f"✅ Patient weight is within standard dosing limits. Using **Actual Weight**: {real_weight} kg (IBW: {ibw:.1f} kg)."
         
     # Show weight adjustment status to user
     st.info(weight_status_msg)
