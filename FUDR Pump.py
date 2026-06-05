@@ -89,12 +89,26 @@ else:
             placeholder="Select gender..."
         )
         
-        dose_rate = st.selectbox(
+        # Dropdown offering default values or a custom trigger
+        dose_selection = st.selectbox(
             "Starting Dose (mg/kg)", 
-            options=[0.12, 0.08, 0.06],
+            options=[0.12, 0.08, 0.06, "Custom..."],
             index=0,
-            format_func=lambda x: f"{x} mg/kg"
+            format_func=lambda x: f"{x} mg/kg" if isinstance(x, (int, float)) else str(x)
         )
+        
+        # If "Custom..." is selected, provide a numeric input box right beneath it
+        if dose_selection == "Custom...":
+            dose_rate = st.number_input(
+                "Enter Custom Dose (mg/kg)",
+                min_value=0.00,
+                max_value=2.00,
+                value=0.10,
+                step=0.01,
+                format="%.2f"
+            )
+        else:
+            dose_rate = dose_selection
 
     with col2:
         real_weight = st.number_input(
