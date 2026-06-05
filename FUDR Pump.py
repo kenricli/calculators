@@ -2,13 +2,13 @@ import streamlit as st
 
 # Set up page configuration
 st.set_page_config(
-    page_title="FUDR Pump Calculator", 
+    page_title="HAI Pump Calculator", 
     page_icon="🩺", 
     layout="centered"
 )
 
 # App Title and Description
-st.title("🩺 FUDR Pump Calculator")
+st.title("🩺 HAI Pump Calculator")
 st.markdown("### FUDR Dose Calculation (1 Cycle = 28 Days)")
 st.write("Calculate the required FUDR dose and compounding components for **Days 1–14** based on pump type.")
 
