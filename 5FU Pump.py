@@ -32,7 +32,7 @@ with col1:
     dose = st.number_input("Enter Dose (mg)", min_value=0.0, value=None, format="%g", placeholder="Enter weight...")
 with col2:
     duration = st.selectbox("Select Duration (hr)", options=[24, 46, 48, 96, 120], index=None, format_func=lambda x: f"{x} hr")
-    override_pump = st.checkbox("Pump Shortage? Override Pump Volume!")
+    override_pump = st.checkbox("Pump shortage? Switch to a larger pump")
 
 # --- Core Business Logic ---
 pump_vol = None
