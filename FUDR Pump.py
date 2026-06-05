@@ -90,7 +90,7 @@ else:
         )
         
         dose_rate = st.selectbox(
-            "Dosing Multiplier (mg/kg)", 
+            "Starting Dose (mg/kg)", 
             options=[0.12, 0.08, 0.06],
             index=0,
             format_func=lambda x: f"{x} mg/kg"
