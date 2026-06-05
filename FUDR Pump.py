@@ -31,12 +31,12 @@ else:  # Medtronic
     dex_dose = "20 mg"
     heparin_dose = "25,000 units"
 
-# Create two columns for neat input alignment
-col1, col2 = st.columns(2)
+# Create three columns for neat input alignment
+col1, col2, col3 = st.columns(3)
 
 with col1:
-    # Patient Weight Input (Set to None/blank by default)
-    weight = st.number_input(
+    # Patient Weight Input (Real Weight)
+    real_weight = st.number_input(
         "Patient Weight (kg)", 
         min_value=0.0, 
         max_value=250.0, 
@@ -54,12 +54,30 @@ with col1:
     )
 
 with col2:
+    # Gender selection for IBW calculation
+    gender = st.selectbox(
+        "Patient Gender",
+        options=["Male", "Female"],
+        index=0
+    )
+
     # Pump Flow Rate Dropdown
     flow_rate = st.selectbox(
         "Pump Flow Rate (mL/day)", 
         options=[1.4, 1.3, 1.2, 1.1],
         index=1,
         format_func=lambda x: f"{x} mL/day"
+    )
+
+with col3:
+    # Height input in cm
+    height_cm = st.number_input(
+        "Patient Height (cm)",
+        min_value=0.0,
+        max_value=250.0,
+        value=None,
+        format="%g",
+        placeholder="Enter height..."
     )
     
     # Dynamic Pump Volume Visual Indicator
@@ -68,12 +86,37 @@ with col2:
 st.divider()
 
 # --- Calculations & Conditional Layout ---
-# Ensure calculations only run if a valid weight has been explicitly entered
-if weight is not None and weight > 0:
+# Ensure calculations only run if valid weight and height have been explicitly entered
+if real_weight is not None and real_weight > 0 and height_cm is not None and height_cm > 0:
     
-    # Formula derived from image_d3ae29.png: 
-    # [Multiplier mg/kg * Weight kg * Pump Volume] / [Flow Rate mL/day]
-    raw_fudr_dose = (dose_rate * weight * pump_volume) / flow_rate
+    # 1. Convert height from cm to inches (1 inch = 2.54 cm)
+    height_inches = height_cm / 2.54
+    
+    # Calculate inches above 5 feet (5 feet = 60 inches)
+    inches_above_5ft = max(0.0, height_inches - 60.0)
+    
+    # 2. Calculate Ideal Body Weight (IBW) based on gender formulas provided
+    if gender == "Male":
+        ibw = 50.0 + (2.3 * inches_above_5ft)
+    else:  # Female
+        ibw = 45.5 + (2.3 * inches_above_5ft)
+        
+    # 3. Determine Dosing Weight based on Overweight condition (Weight > 35% above IBW)
+    is_overweight = real_weight > (1.35 * ibw)
+    
+    if is_overweight:
+        # Calculate Average Body Weight (ABW)
+        dosing_weight = (ibw + real_weight) / 2.0
+        weight_status_msg = f"⚠️ Patient is >35% over IBW. Using **Average Body Weight (ABW)**: {dosing_weight:.2f} kg (IBW: {ibw:.1f} kg)."
+    else:
+        dosing_weight = real_weight
+        weight_status_msg = f"✅ Patient weight is within standard dosing limits. Using **Real Weight**: {real_weight} kg (IBW: {ibw:.1f} kg)."
+        
+    # Show weight adjustment status to user
+    st.info(weight_status_msg)
+    
+    # 4. Formula: [Multiplier mg/kg * Dosing Weight kg * Pump Volume] / [Flow Rate mL/day]
+    raw_fudr_dose = (dose_rate * dosing_weight * pump_volume) / flow_rate
     
     # Round to the nearest 5 mg
     final_fudr_dose = round(raw_fudr_dose / 5) * 5
@@ -94,7 +137,7 @@ if weight is not None and weight > 0:
         delta_color="off"
     )
 
-    # Display standard mixture table modeled after image_d3ae29.png protocol
+    # Display standard mixture table
     st.markdown(f"#### Total Mixture Components")
 
     components_data = {
@@ -116,5 +159,5 @@ if weight is not None and weight > 0:
     )
 
 else:
-    # Message displayed when the weight field is empty
-    st.warning("⚠️ Please enter a patient weight to generate the dosage calculations and compounding summary.")
+    # Message displayed when vital input metrics are missing
+    st.warning("⚠️ Please enter both patient weight and height to generate the dosage calculations and compounding summary.")
