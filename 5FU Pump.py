@@ -87,13 +87,13 @@ col_m1, col_m2, col_m3 = st.columns(3)
 with col_m1:
     st.metric(label="Pump Volume", value=f"{pump_vol} mL" if pump_vol else "-")
 with col_m2:
-    st.metric(label="Pump Volume w/ Overfill", value=f"{vol_overfill} mL" if vol_overfill else "-")
+    st.metric(label="Pump Volume with Overfill", value=f"{vol_overfill} mL" if vol_overfill else "-")
 with col_m3:
-    st.metric(label="Dose w/ Overfill", value=f"{dose_overfill:.1f} mg" if dose_overfill else "-")
+    st.metric(label="Dose with Overfill", value=f"{dose_overfill:.1f} mg" if dose_overfill else "-")
 
 h_col1, h_col2 = st.columns(2)
 with h_col1:
-    st.info(f"**Dose w/ Overfill (Rounded):**\n\n ## `{dose_overfill_rounded} mg`")
+    st.info(f"**Dose with Overfill (Rounded):**\n\n ## `{dose_overfill_rounded} mg`")
 with h_col2:
     st.success(f"**Final Concentration:**\n\n ## `{concentration:.1f} mg/mL`")
 
@@ -106,7 +106,7 @@ value_style = "font-size: 2rem; line-height: 1.4; word-wrap: break-word; white-s
 
 with col_c1:
     st.markdown(
-        f'<div style="{label_style}">Pump Volume w/ Overfill</div>'
+        f'<div style="{label_style}">Pump Volume with Overfill</div>'
         f'<div style="{value_style}">{f"{vol_overfill} mL" if vol_overfill else "-"}</div>',
         unsafe_allow_html=True
     )
