@@ -103,9 +103,9 @@ else:
                 "Enter Custom Dose (mg/kg)",
                 min_value=0.00,
                 max_value=2.00,
-                value=0.10,
-                step=0.01,
+                value=None,
                 format="%.2f"
+                placeholder="Enter dose..."
             )
         else:
             dose_rate = dose_selection
