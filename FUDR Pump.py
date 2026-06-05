@@ -21,11 +21,15 @@ pump_type = st.selectbox(
     index=0,
 )
 
-# Dynamically set pump volume based on the selected type
+# Dynamically set pump volume and baseline components based on the selected type
 if pump_type == "Intera (Codman)":
     pump_volume = 30.0
+    dex_dose = "25 mg (Flat dose)"
+    heparin_dose = "30,000 units"
 else:  # Medtronic
     pump_volume = 20.0
+    dex_dose = "20 mg (Flat dose)"
+    heparin_dose = "25,000 units"
 
 # Create two columns for neat input alignment
 col1, col2 = st.columns(2)
@@ -91,15 +95,15 @@ if weight is not None and weight > 0:
     )
 
     # Display standard mixture table modeled after image_d3ae29.png protocol
-    st.markdown(f"#### Total Mixture Components (Qs to {int(pump_volume)} mL)")
+    st.markdown(f"#### Total Mixture Components (QS to {int(pump_volume)} mL)")
 
     components_data = {
         "Component": ["FUDR", "Dexamethasone", "Heparin", "Normal Saline (NS)"],
         "Target Protocol Dose / Volume": [
             f"{final_fudr_dose} mg",
-            "25 mg (Flat dose)",
-            "30,000 units",
-            f"Quantity sufficient (Qs) to total {int(pump_volume)} mL"
+            dex_dose,
+            heparin_dose,
+            f"Quantity sufficient (QS) to total {int(pump_volume)} mL"
         ]
     }
 
