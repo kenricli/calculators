@@ -2,7 +2,7 @@ import streamlit as st
 
 # Set up page configuration
 st.set_page_config(
-    page_title="FUDR Pump Dose Calculator", 
+    page_title="FUDR Pump Calculator", 
     page_icon="🩺", 
     layout="centered"
 )
