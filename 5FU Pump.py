@@ -1,7 +1,9 @@
 import streamlit as st
 
 st.set_page_config(page_title="5-FU Infusion Pump Calculator", page_icon="🧪", layout="centered")
-st.title("🧪 5-FU Infusion Pump Calculator")
+st.title("🧪 SmartEZ Pump Calculator")
+st.markdown("### 5-FU Dose Calculation")
+st.write("Calculate the required 5-FU dose and volume of NS.")
 
 # --- Configuration Mappings ---
 OVERFILL_MAP = {
