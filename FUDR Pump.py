@@ -105,7 +105,7 @@ else:
                 max_value=2.00,
                 value=None,
                 format="%.2f",
-                placeholder="Enter dose..."
+                placeholder="Enter dose...",
             )
         else:
             dose_rate = dose_selection
