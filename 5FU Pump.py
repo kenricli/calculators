@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.set_page_config(page_title="5-FU Infusion Pump Calculator", page_icon="🧪", layout="centered")
+st.set_page_config(page_title="SmartEZ Pump Calculator", page_icon="🧪", layout="centered")
 st.title("🧪 SmartEZ Pump Calculator")
 st.markdown("### 5-FU Dose Calculation")
 st.write("Calculate the required 5-FU dose and volume of NS.")
