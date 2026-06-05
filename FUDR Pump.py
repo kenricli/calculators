@@ -54,11 +54,12 @@ with col1:
     )
 
 with col2:
-    # Gender selection for IBW calculation
+    # Gender selection for IBW calculation (Defaulted to blank)
     gender = st.selectbox(
         "Patient Gender",
-        options=["Male", "Female"],
-        index=0
+        options=[None, "Male", "Female"],
+        index=0,
+        placeholder="Select gender..."
     )
 
     # Pump Flow Rate Dropdown
@@ -86,8 +87,8 @@ with col3:
 st.divider()
 
 # --- Calculations & Conditional Layout ---
-# Ensure calculations only run if valid weight and height have been explicitly entered
-if real_weight is not None and real_weight > 0 and height_cm is not None and height_cm > 0:
+# Ensure calculations only run if valid weight, height, and gender have been explicitly entered
+if real_weight is not None and real_weight > 0 and height_cm is not None and height_cm > 0 and gender is not None:
     
     # 1. Convert height from cm to inches (1 inch = 2.54 cm)
     height_inches = height_cm / 2.54
@@ -160,4 +161,4 @@ if real_weight is not None and real_weight > 0 and height_cm is not None and hei
 
 else:
     # Message displayed when vital input metrics are missing
-    st.warning("⚠️ Please enter both patient weight and height to generate the dosage calculations and compounding summary.")
+    st.warning("⚠️ Please enter patient weight, height, and select a gender to generate the dosage calculations and compounding summary.")
