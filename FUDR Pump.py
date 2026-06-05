@@ -24,11 +24,11 @@ pump_type = st.selectbox(
 # Dynamically set pump volume and baseline components based on the selected type
 if pump_type == "Intera (Codman)":
     pump_volume = 30.0
-    dex_dose = "25 mg (Flat dose)"
+    dex_dose = "25 mg"
     heparin_dose = "30,000 units"
 else:  # Medtronic
     pump_volume = 20.0
-    dex_dose = "20 mg (Flat dose)"
+    dex_dose = "20 mg"
     heparin_dose = "25,000 units"
 
 # Create two columns for neat input alignment
