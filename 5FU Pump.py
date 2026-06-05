@@ -5,6 +5,8 @@ st.title("🧪 SmartEZ Pump Calculator")
 st.markdown("### 5-FU Dose Calculation")
 st.write("Calculate the required 5-FU dose and volume of NS.")
 
+st.divider()
+
 # --- Configuration Mappings ---
 OVERFILL_MAP = {
     92: 94,
