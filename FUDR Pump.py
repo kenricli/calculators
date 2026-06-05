@@ -95,7 +95,7 @@ if weight is not None and weight > 0:
     )
 
     # Display standard mixture table modeled after image_d3ae29.png protocol
-    st.markdown(f"#### Total Mixture Components (QS to {int(pump_volume)} mL)")
+    st.markdown(f"#### Total Mixture Components")
 
     components_data = {
         "Component": ["FUDR", "Dexamethasone", "Heparin", "Normal Saline (NS)"],
