@@ -3,7 +3,7 @@ import streamlit as st
 st.set_page_config(page_title="SmartEZ Pump Calculator", page_icon="🧪", layout="centered")
 st.title("🧪 SmartEZ Pump Calculator")
 st.markdown("### 5-FU Dose Calculation")
-st.write("Calculate the required 5-FU dose and volume of NS.")
+st.write("Calculate the 5-FU dose with overfill based on pump type.")
 
 st.divider()
 
