@@ -175,10 +175,10 @@ elif st.session_state.active_calculator == "FUDR":
             dose_selection = st.selectbox("Starting Dose (mg/kg)", options=[0.12, 0.08, 0.06, "Custom..."], index=0)
             dose_rate = st.number_input("Enter Custom Dose (mg/kg)", min_value=0.00, max_value=2.00, value=None) if dose_selection == "Custom..." else dose_selection
         with col2:
-            real_weight = st.number_input("Patient Weight (kg)", min_value=0.0, max_value=250.0, value=None, placeholder="Enter weight...")
+            real_weight = st.number_input("Patient Weight (kg)", min_value=0.0, max_value=250.0, value=None, format="%g", placeholder="Enter weight...")
             flow_rate = st.selectbox("Pump Flow Rate (mL/day)", options=[1.4, 1.3, 1.2, 1.1], index=1, format_func=lambda x: f"{x} mL/day")
         with col3:
-            height_cm = st.number_input("Patient Height (cm)", min_value=0.0, max_value=250.0, value=None, placeholder="Enter height...")
+            height_cm = st.number_input("Patient Height (cm)", min_value=0.0, max_value=250.0, value=None, format="%g", placeholder="Enter height...")
             st.metric(label="Pump Volume (Fixed)", value=f"{int(pump_volume)} mL")
 
         st.divider()
