@@ -184,6 +184,12 @@ elif st.session_state.active_calculator == "FUDR":
         })
         st.dataframe(df_components, hide_index=True, use_container_width=True)
 
+        # Protocol Safety Note
+        st.info(
+            f"💡 **Note:** This calculation is specifically for **Day 1-14** of the 28-day cycle using a {pump_type} pump. "
+            "Verify the pump's unique serial number, patient ID card, or sticker to confirm the accurate flow rate before preparation."
+        )
+
 
 # ==============================================================================
 # 🩻 CALCULATOR 3: ANTHROPOMETRICS & BSA SUITE
