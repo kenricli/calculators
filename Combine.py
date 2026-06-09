@@ -1,9 +1,10 @@
 import streamlit as st
 import pandas as pd
+import math
 
 # --- Page Configuration ---
 st.set_page_config(
-    page_title="Calculator Suite", 
+    page_title="Oncology Calculator Suite", 
     page_icon="🧮", 
     layout="centered"
 )
@@ -15,11 +16,11 @@ if "active_calculator" not in st.session_state:
 # --- Epic/Beacon-Style Sidebar Navigation ---
 st.sidebar.markdown("## 🧮 Calculator Suite")
 
-# --- Made this text smaller using inline HTML styling ---
+# Smaller markdown font choice for selection text
 st.sidebar.markdown('<p style="font-size: 0.85rem; font-weight: 500; margin-bottom: 0px;">Select a calculator below:</p>', unsafe_allow_html=True)
 st.sidebar.markdown("---")
 
-# Use columns or individual buttons to mimic clinical workflow selection tabs
+# Navigation Click Buttons 
 if st.sidebar.button(
     "🧪 Systemic Infusion (5-FU)", 
     use_container_width=True, 
@@ -36,8 +37,16 @@ if st.sidebar.button(
     st.session_state.active_calculator = "FUDR"
     st.rerun()
 
+if st.sidebar.button(
+    "📐 BSA Comparative Calculator", 
+    use_container_width=True, 
+    type="primary" if st.session_state.active_calculator == "BSA" else "secondary"
+):
+    st.session_state.active_calculator = "BSA"
+    st.rerun()
+
 st.sidebar.markdown("---")
-st.sidebar.caption("v2.1.0 | Dedicated to the PCMB Team")
+st.sidebar.caption("v2.2.0 | Clinical Decision Support Tool")
 
 
 # ==============================================================================
@@ -361,3 +370,75 @@ elif st.session_state.active_calculator == "FUDR":
 
         else:
             st.warning("⚠️ Please enter patient weight, height, and select a gender to generate the dosage calculations and compounding summary.")
+
+
+# ==============================================================================
+# 📐 CALCULATOR 3: COMPARATIVE BSA CALCULATOR
+# ==============================================================================
+elif st.session_state.active_calculator == "BSA":
+    st.title("📐 BSA Comparative Calculator")
+    st.markdown("### Body Surface Area Calculation Methodologies")
+    st.write("Calculate and contrast BSA outputs across standard oncological and pediatric formulas.")
+
+    st.divider()
+
+    col1, col2 = st.columns(2)
+    with col1:
+        weight = st.number_input("Patient Weight (kg)", min_value=0.0, value=None, format="%g", placeholder="Enter weight...")
+    with col2:
+        height = st.number_input("Patient Height (cm)", min_value=0.0, value=None, format="%g", placeholder="Enter height...")
+
+    if weight and height:
+        # --- Mathematical Calculations for Formulas ---
+        # 1. Mosteller Formula
+        bsa_mosteller = math.sqrt((weight * height) / 3600.0)
+        
+        # 2. DuBois & DuBois Formula
+        bsa_dubois = 0.007184 * (weight ** 0.425) * (height ** 0.725)
+        
+        # 3. Haycock Formula
+        bsa_haycock = 0.024265 * (weight ** 0.5378) * (height ** 0.3964)
+        
+        # 4. Gehan & George Formula
+        bsa_gehan = 0.0235 * (weight ** 0.51456) * (height ** 0.42246)
+
+        # --- UI Display Layout ---
+        st.markdown("---")
+        st.subheader("Primary Oncology Baseline")
+
+        col_b1, col_b2 = st.columns(2)
+        with col_b1:
+            st.info(f"**Mosteller BSA (Standard):**\n\n ## `{bsa_mosteller:.3f} m²`")
+        with col_b2:
+            st.success(f"**DuBois BSA:**\n\n ## `{bsa_dubois:.3f} m²`")
+
+        st.markdown("---")
+        st.subheader("Formula Output Variance Matrix")
+
+        # Create interactive dataframe representation
+        df_bsa = pd.DataFrame({
+            "Methodology / Formula": ["Mosteller", "DuBois & DuBois", "Haycock", "Gehan & George"],
+            "Calculated BSA": [
+                f"{bsa_mosteller:.4f} m²", 
+                f"{bsa_dubois:.4f} m²", 
+                f"{bsa_haycock:.4f} m²", 
+                f"{bsa_gehan:.4f} m²"
+            ],
+            "Mathematical Equation Reference": [
+                "√( (Wt × Ht) / 3600 )", 
+                "0.007184 × Wt⁰.⁴²⁵ × Ht⁰.⁷²⁵", 
+                "0.024265 × Wt⁰.⁵³⁷⁸ × Ht⁰.³⁹⁶⁴", 
+                "0.0235 × Wt⁰.⁵¹⁴⁵⁶ × Ht⁰.⁴²2⁴⁶"
+            ]
+        })
+        st.dataframe(df_bsa, hide_index=True, use_container_width=True)
+
+        # Protocol Safety Note
+        st.info(
+            "💡 **Clinical Context:** The **Mosteller** formula is most frequently applied across "
+            "standard modern chemotherapy order entry systems (such as Epic Beacon) due to its simple validation "
+            "and low calculation margin error. Double-check your institutional workspace standard before choosing alternative variants."
+        )
+
+    else:
+        st.warning("⚠️ Please enter a valid patient weight and height to generate comparative BSA formula metrics.")
