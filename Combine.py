@@ -2,48 +2,59 @@ import streamlit as st
 import pandas as pd
 import math
 
-# --- Page Configuration ---
+# --- 1. Global Configurations & Static Mappings ---
 st.set_page_config(
     page_title="Oncology Calculator Suite", 
     page_icon="🧮", 
     layout="centered"
 )
 
-# --- 1. Session State Initialization for Navigation ---
+OVERFILL_MAP = {92: 94, 96: 98, 192: 195.5, 230: 233.5, 240: 243.5}
+
+PUMP_TYPE_MAP = {
+    (24, None): 'SMARTeZ 10 mL/hr 270 mL <span style="color: #2e7d32;">(Green)</span>',
+    (96, None): 'SMARTeZ 2 mL/hr 270 mL <span style="color: #fbc02d;">(Yellow)</span>',
+    (120, None): 'SMARTeZ 2 mL/hr 270 mL <span style="color: #fbc02d;">(Yellow)</span>',
+    (None, 92): 'SMARTeZ 2 mL/hr 100 mL <span style="color: #fbc02d;">(Yellow)</span>',
+    (None, 96): 'SMARTeZ 2 mL/hr 100 mL <span style="color: #fbc02d;">(Yellow)</span>',
+    (None, 230): 'SMARTeZ 5 mL/hr 270 mL <span style="color: #8d6e63;">(Brown)</span>',
+    (None, 240): 'SMARTeZ 5 mL/hr 270 mL <span style="color: #8d6e63;">(Brown)</span>'
+}
+
+PUMP_SPECS = {
+    "Intera (Codman)": {"volume": 30.0, "dex": "25 mg", "heparin": "30,000 units"},
+    "Medtronic": {"volume": 20.0, "dex": "20 mg", "heparin": "25,000 units"}
+}
+
+LABEL_STYLE = "font-size: 0.9rem; color: #ffffff;"
+VALUE_STYLE = "font-size: 2rem; line-height: 1.4; word-wrap: break-word; white-space: normal;"
+
+
+# --- 2. Helper Calculation Functions ---
+def calculate_ibw(gender: str, height_cm: float) -> float:
+    height_inches = height_cm / 2.54
+    inches_above_5ft = max(0.0, height_inches - 60.0)
+    base_weight = 50.0 if gender == "Male" else 45.5
+    return base_weight + (2.3 * inches_above_5ft)
+
+
+# --- 3. Session State & Sidebar Navigation ---
 if "active_calculator" not in st.session_state:
-    st.session_state.active_calculator = "5-FU"  # Default calculator on load
+    st.session_state.active_calculator = "5-FU"
 
-# --- Epic/Beacon-Style Sidebar Navigation ---
 st.sidebar.markdown("## 🧮 Oncology Clinical Suite")
-
-# Small font-size line style preserved 
 st.sidebar.markdown('<p style="font-size: 0.85rem; font-weight: 500; margin-bottom: 0px;">Select a calculator below:</p>', unsafe_allow_html=True)
 st.sidebar.markdown("---")
 
-# Navigation Button Tabs
-if st.sidebar.button(
-    "🧪 Systemic Infusion (5-FU)", 
-    use_container_width=True, 
-    type="primary" if st.session_state.active_calculator == "5-FU" else "secondary"
-):
+# Note: st.rerun() is unnecessary because checking a clicked button automatically triggers a rerun with the state changed
+if st.sidebar.button("🧪 Systemic Infusion (5-FU)", use_container_width=True, type="primary" if st.session_state.active_calculator == "5-FU" else "secondary"):
     st.session_state.active_calculator = "5-FU"
-    st.rerun()
 
-if st.sidebar.button(
-    "🩺 Hepatic Arterial Infusion (FUDR)", 
-    use_container_width=True, 
-    type="primary" if st.session_state.active_calculator == "FUDR" else "secondary"
-):
+if st.sidebar.button("🩺 Hepatic Arterial Infusion (FUDR)", use_container_width=True, type="primary" if st.session_state.active_calculator == "FUDR" else "secondary"):
     st.session_state.active_calculator = "FUDR"
-    st.rerun()
 
-if st.sidebar.button(
-    "📏 Weight & BSA", 
-    use_container_width=True, 
-    type="primary" if st.session_state.active_calculator == "BSA" else "secondary"
-):
+if st.sidebar.button("📏 Weight & BSA", use_container_width=True, type="primary" if st.session_state.active_calculator == "BSA" else "secondary"):
     st.session_state.active_calculator = "BSA"
-    st.rerun()
 
 st.sidebar.markdown("---")
 st.sidebar.caption("v2.2.1 | Clinical Decision Support Tool")
@@ -56,19 +67,7 @@ if st.session_state.active_calculator == "5-FU":
     st.title("🧪 SMARTeZ Pump Calculator")
     st.markdown("### 5-FU Dose Calculation")
     st.write("Calculate the 5-FU dose with overfill based on pump type.")
-
     st.divider()
-
-    OVERFILL_MAP = {92: 94, 96: 98, 192: 195.5, 230: 233.5, 240: 243.5}
-    PUMP_TYPE_MAP = {
-        (24, None): 'SMARTeZ 10 mL/hr 270 mL <span style="color: #2e7d32;">(Green)</span>',
-        (96, None): 'SMARTeZ 2 mL/hr 270 mL <span style="color: #fbc02d;">(Yellow)</span>',
-        (120, None): 'SMARTeZ 2 mL/hr 270 mL <span style="color: #fbc02d;">(Yellow)</span>',
-        (None, 92): 'SMARTeZ 2 mL/hr 100 mL <span style="color: #fbc02d;">(Yellow)</span>',
-        (None, 96): 'SMARTeZ 2 mL/hr 100 mL <span style="color: #fbc02d;">(Yellow)</span>',
-        (None, 230): 'SMARTeZ 5 mL/hr 270 mL <span style="color: #8d6e63;">(Brown)</span>',
-        (None, 240): 'SMARTeZ 5 mL/hr 270 mL <span style="color: #8d6e63;">(Brown)</span>'
-    }
 
     col1, col2 = st.columns(2)
     with col1:
@@ -77,19 +76,18 @@ if st.session_state.active_calculator == "5-FU":
         duration = st.selectbox("Select Duration (hr)", options=[24, 46, 48, 96, 120], index=None, format_func=lambda x: f"{x} hr")
         override_pump = st.checkbox("Pump shortage? Switch to a larger pump")
 
-    # --- Conditional UI Display based on user input ---
     if not dose or not duration:
         st.warning("⚠️ Please enter dose and select a duration to generate the dosage calculations.")
     else:
         pump_vol = None
         if override_pump:
-            if duration == 46: pump_vol = 230
-            elif duration == 48: pump_vol = 240
+            if duration in [46, 48]:
+                pump_vol = 230 if duration == 46 else 240
             else:
                 st.warning("⚠️ Override is only applicable for 46 hr or 48 hr durations.")
                 override_pump = False
 
-        if not override_pump and dose is not None:
+        if not override_pump:
             if duration == 24: pump_vol = 240
             elif duration == 96: pump_vol = 192
             elif duration == 120: pump_vol = 240
@@ -99,14 +97,14 @@ if st.session_state.active_calculator == "5-FU":
         vol_overfill = OVERFILL_MAP.get(pump_vol)
         pump_type = PUMP_TYPE_MAP.get((duration, None)) or PUMP_TYPE_MAP.get((None, pump_vol), "")
 
-        if dose and dose > 0 and pump_vol and vol_overfill:
+        if dose > 0 and pump_vol and vol_overfill:
             dose_overfill = dose * (vol_overfill / pump_vol)
             dose_overfill_rounded = int(50 * round(dose_overfill / 50))
             concentration = dose_overfill_rounded / vol_overfill
             drug_vol = dose_overfill_rounded / 50
             ns_vol = vol_overfill - drug_vol
         else:
-            dose_overfill, dose_overfill_rounded, concentration, drug_vol, ns_vol = 0.0, 0, 0.0, 0, 0
+            dose_overfill = dose_overfill_rounded = concentration = drug_vol = ns_vol = 0.0
 
         st.markdown("---")
         st.subheader("For Verification")
@@ -122,9 +120,8 @@ if st.session_state.active_calculator == "5-FU":
         st.markdown("---")
         st.subheader("For Compounding")
         col_c1, col_c2 = st.columns(2)
-        label_style, value_style = "font-size: 0.9rem; color: #ffffff;", "font-size: 2rem; line-height: 1.4; word-wrap: break-word; white-space: normal;"
-        col_c1.markdown(f'<div style="{label_style}">Pump Volume with Overfill</div><div style="{value_style}">{f"{vol_overfill} mL" if vol_overfill else "-"}</div>', unsafe_allow_html=True)
-        col_c2.markdown(f'<div style="{label_style}">Pump Type</div><div style="{value_style}">{pump_type if pump_type else "-"}</div>', unsafe_allow_html=True)
+        col_c1.markdown(f'<div style="{LABEL_STYLE}">Pump Volume with Overfill</div><div style="{VALUE_STYLE}">{f"{vol_overfill} mL" if vol_overfill else "-"}</div>', unsafe_allow_html=True)
+        col_c2.markdown(f'<div style="{LABEL_STYLE}">Pump Type</div><div style="{VALUE_STYLE}">{pump_type if pump_type else "-"}</div>', unsafe_allow_html=True)
         
         st.html("<br>")
         h_col3, h_col4 = st.columns(2)
@@ -140,11 +137,7 @@ elif st.session_state.active_calculator == "FUDR":
     st.markdown("### FUDR Dose Calculation (1 Cycle = 28 Days)")
     st.divider()
 
-    pump_type = st.selectbox("Select Pump Type", options=["Intera (Codman)", "Medtronic"], index=0)
-    PUMP_SPECS = {
-        "Intera (Codman)": {"volume": 30.0, "dex": "25 mg", "heparin": "30,000 units"},
-        "Medtronic": {"volume": 20.0, "dex": "20 mg", "heparin": "25,000 units"}
-    }
+    pump_type = st.selectbox("Select Pump Type", options=list(PUMP_SPECS.keys()), index=0)
     specs = PUMP_SPECS[pump_type]
     pump_volume = specs["volume"]
 
@@ -162,10 +155,8 @@ elif st.session_state.active_calculator == "FUDR":
 
     st.divider()
 
-    if real_weight and height_cm and gender:
-        height_inches = height_cm / 2.54
-        inches_above_5ft = max(0.0, height_inches - 60.0)
-        ibw = (50.0 if gender == "Male" else 45.5) + (2.3 * inches_above_5ft)
+    if real_weight and height_cm and gender and dose_rate is not None:
+        ibw = calculate_ibw(gender, height_cm)
         is_overweight = real_weight > (1.35 * ibw)
         dosing_weight = (ibw + real_weight) / 2.0 if is_overweight else real_weight
         
@@ -188,13 +179,13 @@ elif st.session_state.active_calculator == "FUDR":
         })
         st.dataframe(df_components, hide_index=True, use_container_width=True)
 
-        # Protocol Safety Note
         st.info(
             f"💡 **Note:** This calculation is specifically for **Day 1-14** of the 28-day cycle using a {pump_type} pump. "
             "Verify the pump's unique serial number, patient ID card, or sticker to confirm the accurate flow rate before preparation."
         )
     else:
         st.warning("⚠️ Please enter patient weight, height, and select a gender to generate the dosage calculations and compounding summary.")
+
 
 # ==============================================================================
 # 🩻 CALCULATOR 3: ANTHROPOMETRICS & BSA SUITE
@@ -203,7 +194,6 @@ elif st.session_state.active_calculator == "BSA":
     st.title("📏 Weight & BSA Calculator")
     st.markdown("### Patient Weight & BSA Indexing")
     st.write("Simultaneously evaluate Body Surface Area (BSA) across multiple foundational oncological equations.")
-
     st.divider()
 
     col1, col2, col3 = st.columns(3)
@@ -222,18 +212,10 @@ elif st.session_state.active_calculator == "BSA":
         bsa_haycock = 0.024265 * (bsa_height ** 0.3964) * (bsa_weight ** 0.5378)
         bsa_gehan = 0.0235 * (bsa_height ** 0.42246) * (bsa_weight ** 0.51456)
         
-        height_in = bsa_height / 2.54
-        inches_over_5ft = max(0.0, height_in - 60.0)
-        
-        if bsa_gender == "Male":
-            ibw_val = 50.0 + (2.3 * inches_over_5ft)
-        else:
-            ibw_val = 45.5 + (2.3 * inches_over_5ft)
-            
+        ibw_val = calculate_ibw(bsa_gender, bsa_height)
         adj_weight_val = ibw_val + 0.4 * (bsa_weight - ibw_val)
         percent_ibw = (bsa_weight / ibw_val) * 100
 
-        # Formatted rounded to 1 decimal place maximum, but dropping trailing zeros via :g
         formatted_ibw = f"{round(ibw_val, 1):g}"
         formatted_adjbw = f"{round(adj_weight_val, 1):g}"
         formatted_pct = f"{round(percent_ibw, 1):g}"
@@ -245,14 +227,11 @@ elif st.session_state.active_calculator == "BSA":
 
         st.subheader("📋 Clinician Weight Workspace")
         m_col1, m_col2, m_col3 = st.columns(3)
-        
-        # Display formatted string variables without trailing zeroes
         m_col1.metric(label="Ideal Body Weight (IBW)", value=f"{formatted_ibw} kg")
         m_col2.metric(label="Adjusted Body Weight (AdjBW)", value=f"{formatted_adjbw} kg")
         m_col3.metric(label="Percent of IBW", value=f"{formatted_pct} %")
 
         st.markdown("#### BSA Multi-Equation Matrix")
-        
         df_bsa = pd.DataFrame({
             "BSA Mathematical Formula": [
                 "Mosteller (Oncology Standard)", 
@@ -268,7 +247,6 @@ elif st.session_state.active_calculator == "BSA":
             ]
         })
         st.dataframe(df_bsa, hide_index=True, use_container_width=True)
-        
         st.info("💡 **Clinical Note:** Mosteller remains the default calculation model used across modern Electronic Health Records (EHR) networks for standard surface-area-based chemotherapeutic indexing.")
     else:
         st.warning("⚠️ Please provide Patient Gender, Weight, and Height inputs to verify biometric index values.")
