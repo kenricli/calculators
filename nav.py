@@ -1,8 +1,26 @@
 import streamlit as st
 
 
+def _hide_default_streamlit_navigation() -> None:
+    st.markdown(
+        """
+        <style>
+            section[data-testid="stSidebarNav"] {
+                display: none;
+            }
+            div[data-testid="collapsedControl"] {
+                display: none;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 def render_sidebar_nav(current_page: str) -> None:
     """Render sidebar navigation buttons for the multipage app."""
+    _hide_default_streamlit_navigation()
+
     with st.sidebar:
         st.title("🧮 Calculator Suite")
         st.caption("Select a calculator below")

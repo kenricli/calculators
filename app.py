@@ -7,19 +7,6 @@ st.set_page_config(
     layout="centered",
     initial_sidebar_state="expanded",
 )
-st.markdown(
-    """
-    <style>
-        section[data-testid="stSidebarNav"] {
-            display: none;
-        }
-        div[data-testid="collapsedControl"] {
-            display: none;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
 
 render_sidebar_nav("home")
 
