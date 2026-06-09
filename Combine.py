@@ -79,7 +79,7 @@ if st.session_state.active_calculator == "5-FU":
 
     # --- Conditional UI Display based on user input ---
     if not dose or not duration:
-        st.warning("⚠️ Please enter dose and select a duration to generate the dosage calculations")
+        st.warning("⚠️ Please enter dose and select a duration to generate the dosage calculations.")
     else:
         pump_vol = None
         if override_pump:
