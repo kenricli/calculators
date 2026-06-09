@@ -46,7 +46,7 @@ if st.sidebar.button(
     st.rerun()
 
 st.sidebar.markdown("---")
-st.sidebar.caption("v2.2.0 | Clinical Decision Support Tool")
+st.sidebar.caption("v2.2.1 | Clinical Decision Support Tool")
 
 
 # ==============================================================================
@@ -220,7 +220,6 @@ elif st.session_state.active_calculator == "BSA":
 
     st.divider()
 
-    # --- Input Fields ---
     col1, col2, col3 = st.columns(3)
     with col1:
         bsa_gender = st.selectbox("Patient Gender", options=["Male", "Female"], index=None, placeholder="Select gender...")
@@ -232,14 +231,11 @@ elif st.session_state.active_calculator == "BSA":
     st.divider()
 
     if bsa_gender and bsa_weight and bsa_height:
-        # --- Mathematical Calculations ---
-        # 1. BSA Formulas
         bsa_mosteller = math.sqrt((bsa_height * bsa_weight) / 3600)
         bsa_dubois = 0.007184 * (bsa_height ** 0.725) * (bsa_weight ** 0.425)
         bsa_haycock = 0.024265 * (bsa_height ** 0.3964) * (bsa_weight ** 0.5378)
         bsa_gehan = 0.0235 * (bsa_height ** 0.42246) * (bsa_weight ** 0.51456)
         
-        # 2. Weight Calculations (Devine Formula for IBW)
         height_in = bsa_height / 2.54
         inches_over_5ft = max(0.0, height_in - 60.0)
         
@@ -248,24 +244,27 @@ elif st.session_state.active_calculator == "BSA":
         else:
             ibw_val = 45.5 + (2.3 * inches_over_5ft)
             
-        # Adjusted Body Weight (AdjBW)
         adj_weight_val = ibw_val + 0.4 * (bsa_weight - ibw_val)
         percent_ibw = (bsa_weight / ibw_val) * 100
 
-        # --- Context Alerts ---
-        if bsa_weight > (1.2 * ibw_val):
-            st.warning(f"⚠️ Patient is obese or overweight (>120% of IBW at **{percent_ibw:.1f}%**). Consider utilizing **Adjusted Body Weight** for chemotherapy regimens requiring weight-based adjustments.")
-        else:
-            st.info(f"✅ Patient weight profile is within standard limits (**{percent_ibw:.1f}%** of Ideal Body Weight).")
+        # Formatted rounded to 1 decimal place maximum, but dropping trailing zeros via :g
+        formatted_ibw = f"{round(ibw_val, 1):g}"
+        formatted_adjbw = f"{round(adj_weight_val, 1):g}"
+        formatted_pct = f"{round(percent_ibw, 1):g}"
 
-        # --- UI Metrics Display ---
+        if bsa_weight > (1.2 * ibw_val):
+            st.warning(f"⚠️ Patient is obese or overweight (>120% of IBW at **{formatted_pct}%**). Consider utilizing **Adjusted Body Weight** for chemotherapy regimens requiring weight-based adjustments.")
+        else:
+            st.info(f"✅ Patient weight profile is within standard limits (**{formatted_pct}%** of Ideal Body Weight).")
+
         st.subheader("📋 Clinician Weight Workspace")
         m_col1, m_col2, m_col3 = st.columns(3)
-        m_col1.metric(label="Ideal Body Weight (IBW)", value=f"{ibw_val:.2f} kg")
-        m_col2.metric(label="Adjusted Body Weight (AdjBW)", value=f"{adj_weight_val:.2f} kg")
-        m_col3.metric(label="Percent of IBW", value=f"{percent_ibw:.1f} %")
+        
+        # Display formatted string variables without trailing zeroes
+        m_col1.metric(label="Ideal Body Weight (IBW)", value=f"{formatted_ibw} kg")
+        m_col2.metric(label="Adjusted Body Weight (AdjBW)", value=f"{formatted_adjbw} kg")
+        m_col3.metric(label="Percent of IBW", value=f"{formatted_pct} %")
 
-        # --- Comparison Frame View ---
         st.markdown("#### BSA Multi-Equation Matrix")
         
         df_bsa = pd.DataFrame({
