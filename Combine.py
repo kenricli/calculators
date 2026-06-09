@@ -192,20 +192,45 @@ elif st.session_state.active_calculator == "FUDR":
         })
         st.dataframe(df_components, hide_index=True, use_container_width=True)
 
-        # Build clean string version for clipboard copying (removing raw markdown wrappers if necessary)
+# Build clean string version for clipboard copying
         clean_admin_text = (
-            f"1. Floxuridine dose: {dose_rate:g} mg/kg/day × {dosing_weight:g} kg = Daily dose of Floxuridine: {daily_dose:.2f} mg/day\n"
-            f"2. Daily dose of Floxuridine: {daily_dose:.2f} mg/day / flow rate: {flow_rate} mL/day = pump concentration: {pump_concentration:.2f} mg/mL\n"
-            f"3. Pump concentration: {pump_concentration:.2f} mg/mL × pump volume: {int(pump_volume)} mL = total dose of FLOXURIDINE: {final_fudr_dose} mg (rounded to closest 5 mg)\n"
+            f"1. Floxuridine dose: {dose_rate:g} mg/kg/day × {dosing_weight:g} kg = Daily dose of Floxuridine: {daily_dose:.2f} mg/day\\n"
+            f"2. Daily dose of Floxuridine: {daily_dose:.2f} mg/day / flow rate: {flow_rate} mL/day = pump concentration: {pump_concentration:.2f} mg/mL\\n"
+            f"3. Pump concentration: {pump_concentration:.2f} mg/mL × pump volume: {int(pump_volume)} mL = total dose of FLOXURIDINE: {final_fudr_dose} mg (rounded to closest 5 mg)\\n"
             f"4. Please insert total dose into Floxuridine dosing field above"
         )
 
-        # --- Updated Header and Copy Layout ---
-        title_col, btn_col = st.columns([0.8, 0.2], vertical_alignment="bottom")
+        # --- Layout Header and Copy Button seamlessly ---
+        title_col, btn_col = st.columns([0.75, 0.25], vertical_alignment="bottom")
         with title_col:
             st.subheader("✏️ To Fill Out Admin Instructions")
         with btn_col:
-            st.copy_to_clipboard(clean_admin_text, label="Copy Text", icon="📋")
+            # Custom HTML button that utilizes the browser's clipboard API safely
+            # Escaping the string properly to prevent JS breaking on special characters
+            escaped_text = clean_admin_text.replace("'", "\\'").replace("\n", "\\n")
+            
+            html_button = f"""
+            <button onclick="navigator.clipboard.writeText('{escaped_text}'); this.innerText='Copied!';" 
+                    style="
+                        width: 100%;
+                        background-color: #262730;
+                        color: #ffffff;
+                        border: 1px solid rgba(250, 250, 250, 0.2);
+                        padding: 6px 12px;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        font-size: 14px;
+                        font-weight: 500;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 8px;
+                        height: 38px;
+                    ">
+                📋 Copy Text
+            </button>
+            """
+            st.components.v1.html(html_button, height=45)
 
         admin_text = (
             f"1. **Floxuridine dose:** {dose_rate:g} mg/kg/day × {dosing_weight:g} kg = **Daily dose of Floxuridine:** {daily_dose:.2f} mg/day  \n"
