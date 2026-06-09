@@ -132,82 +132,57 @@ if st.session_state.active_calculator == "5-FU":
 # 🫁 CALCULATOR 2: HEPATIC ARTERIAL INFUSION (FUDR)
 # ==============================================================================
 elif st.session_state.active_calculator == "FUDR":
-    if "disclaimer_agreed" not in st.session_state:
-        st.session_state.disclaimer_agreed = None
+    st.title("🩺 HAI Pump Calculator")
+    st.markdown("### FUDR Dose Calculation (1 Cycle = 28 Days)")
+    st.divider()
 
-    if st.session_state.disclaimer_agreed is None:
-        st.title("🩺 HAI Pump Calculator")
-        st.subheader("⚠️ Medical Disclaimer & Terms of Use")
-        st.warning("**CRITICAL NOTICE:** This calculator is intended for reference and educational purposes only")
-        st.markdown("""
-            By proceeding, you acknowledge and agree that:
-            * You will **manually verify all dosage calculations** against official protocols.
-            """)
-        d_col1, d_col2 = st.columns(2)
-        if d_col1.button("🤝 I Agree", use_container_width=True, type="primary"):
-            st.session_state.disclaimer_agreed = True
-            st.rerun()
-        if d_col2.button("❌ Disagree / Exit", use_container_width=True):
-            st.session_state.disclaimer_agreed = False
-            st.rerun()
-    elif st.session_state.disclaimer_agreed is False:
-        st.title("🩺 HAI Pump Calculator")
-        st.error("🔒 Access Denied. You must agree to the medical disclaimer terms.")
-        if st.button("Return to Disclaimer screen"):
-            st.session_state.disclaimer_agreed = None
-            st.rerun()
-    else:
-        st.title("🩺 HAI Pump Calculator")
-        st.markdown("### FUDR Dose Calculation (1 Cycle = 28 Days)")
-        st.divider()
+    pump_type = st.selectbox("Select Pump Type", options=["Intera (Codman)", "Medtronic"], index=0)
+    PUMP_SPECS = {
+        "Intera (Codman)": {"volume": 30.0, "dex": "25 mg", "heparin": "30,000 units"},
+        "Medtronic": {"volume": 20.0, "dex": "20 mg", "heparin": "25,000 units"}
+    }
+    specs = PUMP_SPECS[pump_type]
+    pump_volume = specs["volume"]
 
-        pump_type = st.selectbox("Select Pump Type", options=["Intera (Codman)", "Medtronic"], index=0)
-        PUMP_SPECS = {
-            "Intera (Codman)": {"volume": 30.0, "dex": "25 mg", "heparin": "30,000 units"},
-            "Medtronic": {"volume": 20.0, "dex": "20 mg", "heparin": "25,000 units"}
-        }
-        specs = PUMP_SPECS[pump_type]
-        pump_volume = specs["volume"]
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        gender = st.selectbox("Patient Gender", options=["Male", "Female"], index=None, placeholder="Select gender...")
+        dose_selection = st.selectbox("Starting Dose (mg/kg)", options=[0.12, 0.08, 0.06, "Custom..."], index=0)
+        dose_rate = st.number_input("Enter Custom Dose (mg/kg)", min_value=0.00, max_value=2.00, value=None) if dose_selection == "Custom..." else dose_selection
+    with col2:
+        real_weight = st.number_input("Patient Weight (kg)", min_value=0.0, max_value=250.0, value=None, format="%g", placeholder="Enter weight...")
+        flow_rate = st.selectbox("Pump Flow Rate (mL/day)", options=[1.4, 1.3, 1.2, 1.1], index=1, format_func=lambda x: f"{x} mL/day")
+    with col3:
+        height_cm = st.number_input("Patient Height (cm)", min_value=0.0, max_value=250.0, value=None, format="%g", placeholder="Enter height...")
+        st.metric(label="Pump Volume (Fixed)", value=f"{int(pump_volume)} mL")
 
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            gender = st.selectbox("Patient Gender", options=["Male", "Female"], index=None, placeholder="Select gender...")
-            dose_selection = st.selectbox("Starting Dose (mg/kg)", options=[0.12, 0.08, 0.06, "Custom..."], index=0)
-            dose_rate = st.number_input("Enter Custom Dose (mg/kg)", min_value=0.00, max_value=2.00, value=None) if dose_selection == "Custom..." else dose_selection
-        with col2:
-            real_weight = st.number_input("Patient Weight (kg)", min_value=0.0, max_value=250.0, value=None, format="%g", placeholder="Enter weight...")
-            flow_rate = st.selectbox("Pump Flow Rate (mL/day)", options=[1.4, 1.3, 1.2, 1.1], index=1, format_func=lambda x: f"{x} mL/day")
-        with col3:
-            height_cm = st.number_input("Patient Height (cm)", min_value=0.0, max_value=250.0, value=None, format="%g", placeholder="Enter height...")
-            st.metric(label="Pump Volume (Fixed)", value=f"{int(pump_volume)} mL")
+    st.divider()
 
-        st.divider()
-
-        if real_weight and height_cm and gender:
-            height_inches = height_cm / 2.54
-            inches_above_5ft = max(0.0, height_inches - 60.0)
-            ibw = (50.0 if gender == "Male" else 45.5) + (2.3 * inches_above_5ft)
-            is_overweight = real_weight > (1.35 * ibw)
-            dosing_weight = (ibw + real_weight) / 2.0 if is_overweight else real_weight
+    if real_weight and height_cm and gender:
+        height_inches = height_cm / 2.54
+        inches_above_5ft = max(0.0, height_inches - 60.0)
+        ibw = (50.0 if gender == "Male" else 45.5) + (2.3 * inches_above_5ft)
+        is_overweight = real_weight > (1.35 * ibw)
+        dosing_weight = (ibw + real_weight) / 2.0 if is_overweight else real_weight
+        
+        raw_fudr_dose = (dose_rate * dosing_weight * pump_volume) / flow_rate
+        final_fudr_dose = round(raw_fudr_dose / 5) * 5
+        
+        if is_overweight:
+            st.warning(f"⚠️ Patient is >35% over IBW. Using **Average Body Weight**: {dosing_weight:.1f} kg.")
+        else:
+            st.info(f"✅ Using **Actual Body Weight**: {real_weight} kg.")
             
-            raw_fudr_dose = (dose_rate * dosing_weight * pump_volume) / flow_rate
-            final_fudr_dose = round(raw_fudr_dose / 5) * 5
-            
-            if is_overweight:
-                st.warning(f"⚠️ Patient is >35% over IBW. Using **Average Body Weight**: {dosing_weight:.1f} kg.")
-            else:
-                st.info(f"✅ Using **Actual Body Weight**: {real_weight} kg.")
-                
-            st.subheader("📋 Order & Compounding Summary")
-            m_col1, m_col2 = st.columns(2)
-            m_col1.metric(label="Calculated FUDR Dose", value=f"{raw_fudr_dose:.2f} mg")
-            m_col2.metric(label="Final FUDR Dose (Nearest 5 mg)", value=f"{final_fudr_dose} mg")
+        st.subheader("📋 Order & Compounding Summary")
+        m_col1, m_col2 = st.columns(2)
+        m_col1.metric(label="Calculated FUDR Dose", value=f"{raw_fudr_dose:.2f} mg")
+        m_col2.metric(label="Final FUDR Dose (Nearest 5 mg)", value=f"{final_fudr_dose} mg")
 
-            df_components = pd.DataFrame({
-                "Component": ["FUDR", "Dexamethasone", "Heparin", "Normal Saline (NS)"],
-                "Target Protocol Dose / Volume": [f"{final_fudr_dose} mg", specs["dex"], specs["heparin"], f"QS to total {int(pump_volume)} mL"]
-            })
-            st.dataframe(df_components, hide_index=True, use_container_width=True)
+        df_components = pd.DataFrame({
+            "Component": ["FUDR", "Dexamethasone", "Heparin", "Normal Saline (NS)"],
+            "Target Protocol Dose / Volume": [f"{final_fudr_dose} mg", specs["dex"], specs["heparin"], f"QS to total {int(pump_volume)} mL"]
+        })
+        st.dataframe(df_components, hide_index=True, use_container_width=True)
 
 
 # ==============================================================================
@@ -275,10 +250,10 @@ elif st.session_state.active_calculator == "BSA":
                 "Gehan & George"
             ],
             "Calculated Index Value": [
-                f"{bsa_mosteller:.3f} m²",
-                f"{bsa_dubois:.3f} m²",
-                f"{bsa_haycock:.3f} m²",
-                f"{bsa_gehan:.3f} m²"
+                "{"f"{bsa_mosteller:.3f} m²"}",
+                "{"f"{bsa_dubois:.3f} m²"}",
+                "{"f"{bsa_haycock:.3f} m²"}",
+                "{"f"{bsa_gehan:.3f} m²"}"
             ]
         })
         st.dataframe(df_bsa, hide_index=True, use_container_width=True)
