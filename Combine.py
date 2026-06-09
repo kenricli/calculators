@@ -189,6 +189,8 @@ elif st.session_state.active_calculator == "FUDR":
             f"💡 **Note:** This calculation is specifically for **Day 1-14** of the 28-day cycle using a {pump_type} pump. "
             "Verify the pump's unique serial number, patient ID card, or sticker to confirm the accurate flow rate before preparation."
         )
+    else:
+        st.warning("⚠️ Please enter patient weight, height, and select a gender to generate the dosage calculations and compounding summary.")
 
 
 # ==============================================================================
