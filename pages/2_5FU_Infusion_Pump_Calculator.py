@@ -1,47 +1,40 @@
 import streamlit as st
-from nav import render_sidebar_nav
 
-st.set_page_config(
-    page_title="5-FU Infusion Pump Calculator",
-    page_icon="🧪",
-    layout="centered",
-    initial_sidebar_state="expanded",
-)
+st.set_page_config(page_title="SMARTeZ Pump Calculator", page_icon="🧪", layout="centered")
+st.title("🧪 SMARTeZ Pump Calculator")
+st.markdown("### 5-FU Dose Calculation")
+st.write("Calculate the 5-FU dose with overfill based on pump type.")
 
-render_sidebar_nav("5fu")
+st.divider()
 
-st.title("🧪 5-FU Infusion Pump Calculator")
-
+# --- Configuration Mappings ---
 OVERFILL_MAP = {
     92: 94,
     96: 98,
     192: 195.5,
     230: 233.5,
-    240: 243.5,
+    240: 243.5
 }
 
 PUMP_TYPE_MAP = {
-    (24, None): 'SmartEZ 10 mL/hr 270 mL <span style="color: #2e7d32;">(Green)</span>',
-    (96, None): 'SmartEZ 2 mL/hr 270 mL <span style="color: #fbc02d;">(Yellow)</span>',
-    (120, None): 'SmartEZ 2 mL/hr 270 mL <span style="color: #fbc02d;">(Yellow)</span>',
-    (None, 92): 'SmartEZ 2 mL/hr 100 mL <span style="color: #fbc02d;">(Yellow)</span>',
-    (None, 96): 'SmartEZ 2 mL/hr 100 mL <span style="color: #fbc02d;">(Yellow)</span>',
-    (None, 230): 'SmartEZ 5 mL/hr 270 mL <span style="color: #8d6e63;">(Brown)</span>',
-    (None, 240): 'SmartEZ 5 mL/hr 270 mL <span style="color: #8d6e63;">(Brown)</span>',
+    (24, None): 'SMARTeZ 10 mL/hr 270 mL <span style="color: #2e7d32;">(Green)</span>',
+    (96, None): 'SMARTeZ 2 mL/hr 270 mL <span style="color: #fbc02d;">(Yellow)</span>',
+    (120, None): 'SMARTeZ 2 mL/hr 270 mL <span style="color: #fbc02d;">(Yellow)</span>',
+    (None, 92): 'SMARTeZ 2 mL/hr 100 mL <span style="color: #fbc02d;">(Yellow)</span>',
+    (None, 96): 'SMARTeZ 2 mL/hr 100 mL <span style="color: #fbc02d;">(Yellow)</span>',
+    (None, 230): 'SMARTeZ 5 mL/hr 270 mL <span style="color: #8d6e63;">(Brown)</span>',
+    (None, 240): 'SMARTeZ 5 mL/hr 270 mL <span style="color: #8d6e63;">(Brown)</span>'
 }
 
+# --- Input Fields ---
 col1, col2 = st.columns(2)
 with col1:
-    dose = st.number_input("Enter Dose (mg)", min_value=0.0, value=None, format="%g", key="fu_dose")
+    dose = st.number_input("Enter Dose (mg)", min_value=0.0, value=None, format="%g", placeholder="Enter dose...")
 with col2:
-    duration = st.selectbox(
-        "Select Duration (hr)",
-        options=[24, 46, 48, 96, 120],
-        index=None,
-        key="fu_duration",
-    )
-    override_pump = st.checkbox("Pump Shortage? Override Pump Volume!", key="fu_override")
+    duration = st.selectbox("Select Duration (hr)", options=[24, 46, 48, 96, 120], index=None, format_func=lambda x: f"{x} hr")
+    override_pump = st.checkbox("Pump shortage? Switch to a larger pump")
 
+# --- Core Business Logic ---
 pump_vol = None
 
 if override_pump:
@@ -50,9 +43,10 @@ if override_pump:
     elif duration == 48:
         pump_vol = 240
     else:
-        st.warning("Override is only applicable for 46 hr or 48 hr durations.")
+        st.warning("⚠️ Override is only applicable for 46 hr or 48 hr durations.")
         override_pump = False
 
+# Fall back to standard logic if override isn't active/applicable
 if not override_pump and dose is not None:
     if duration == 24:
         pump_vol = 240
@@ -65,9 +59,13 @@ if not override_pump and dose is not None:
     elif duration == 46:
         pump_vol = 230 if dose > 4400 else 92
 
+# Get overfill volume using dict lookup
 vol_overfill = OVERFILL_MAP.get(pump_vol)
+
+# Get pump type using dict lookup (checking duration first, then pump volume)
 pump_type = PUMP_TYPE_MAP.get((duration, None)) or PUMP_TYPE_MAP.get((None, pump_vol), "")
 
+# --- Mathematical Calculations ---
 if dose and dose > 0 and pump_vol and vol_overfill:
     dose_overfill = dose * (vol_overfill / pump_vol)
     dose_overfill_rounded = int(50 * round(dose_overfill / 50))
@@ -81,6 +79,7 @@ else:
     drug_vol = 0
     ns_vol = 0
 
+# --- UI Display ---
 st.markdown("---")
 st.subheader("For Verification")
 
@@ -88,13 +87,13 @@ col_m1, col_m2, col_m3 = st.columns(3)
 with col_m1:
     st.metric(label="Pump Volume", value=f"{pump_vol} mL" if pump_vol else "-")
 with col_m2:
-    st.metric(label="Pump Volume w/ Overfill", value=f"{vol_overfill} mL" if vol_overfill else "-")
+    st.metric(label="Pump Volume with Overfill", value=f"{vol_overfill} mL" if vol_overfill else "-")
 with col_m3:
-    st.metric(label="Dose w/ Overfill", value=f"{dose_overfill:.1f} mg" if dose_overfill else "-")
+    st.metric(label="Dose with Overfill", value=f"{dose_overfill:.1f} mg" if dose_overfill else "-")
 
 h_col1, h_col2 = st.columns(2)
 with h_col1:
-    st.info(f"**Dose w/ Overfill (Rounded):**\n\n ## `{dose_overfill_rounded} mg`")
+    st.info(f"**Dose with Overfill (Rounded):**\n\n ## `{dose_overfill_rounded} mg`")
 with h_col2:
     st.success(f"**Final Concentration:**\n\n ## `{concentration:.1f} mg/mL`")
 
@@ -107,19 +106,20 @@ value_style = "font-size: 2rem; line-height: 1.4; word-wrap: break-word; white-s
 
 with col_c1:
     st.markdown(
-        f'<div style="{label_style}">Pump Volume w/ Overfill</div>'
+        f'<div style="{label_style}">Pump Volume with Overfill</div>'
         f'<div style="{value_style}">{f"{vol_overfill} mL" if vol_overfill else "-"}</div>',
-        unsafe_allow_html=True,
+        unsafe_allow_html=True
     )
 
 with col_c2:
     st.markdown(
         f'<div style="{label_style}">Pump Type</div>'
         f'<div style="{value_style}">{pump_type if pump_type else "-"}</div>',
-        unsafe_allow_html=True,
+        unsafe_allow_html=True
     )
 
-st.markdown("<br>", unsafe_allow_html=True)
+# Clean spacing replacement for st.space()
+st.html("<br>")
 
 h_col3, h_col4 = st.columns(2)
 formatted_drug_vol = f"{drug_vol:g}" if drug_vol else "0"
