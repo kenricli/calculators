@@ -250,10 +250,10 @@ elif st.session_state.active_calculator == "BSA":
                 "Gehan & George"
             ],
             "Calculated Index Value": [
-                "{"f"{bsa_mosteller:.3f} m²"}",
-                "{"f"{bsa_dubois:.3f} m²"}",
-                "{"f"{bsa_haycock:.3f} m²"}",
-                "{"f"{bsa_gehan:.3f} m²"}"
+                f"{bsa_mosteller:.3f} m²",
+                f"{bsa_dubois:.3f} m²",
+                f"{bsa_haycock:.3f} m²",
+                f"{bsa_gehan:.3f} m²"
             ]
         })
         st.dataframe(df_bsa, hide_index=True, use_container_width=True)
