@@ -77,55 +77,59 @@ if st.session_state.active_calculator == "5-FU":
         duration = st.selectbox("Select Duration (hr)", options=[24, 46, 48, 96, 120], index=None, format_func=lambda x: f"{x} hr")
         override_pump = st.checkbox("Pump shortage? Switch to a larger pump")
 
-    pump_vol = None
-    if override_pump:
-        if duration == 46: pump_vol = 230
-        elif duration == 48: pump_vol = 240
-        else:
-            st.warning("⚠️ Override is only applicable for 46 hr or 48 hr durations.")
-            override_pump = False
-
-    if not override_pump and dose is not None:
-        if duration == 24: pump_vol = 240
-        elif duration == 96: pump_vol = 192
-        elif duration == 120: pump_vol = 240
-        elif duration == 48: pump_vol = 240 if dose > 4600 else 96
-        elif duration == 46: pump_vol = 230 if dose > 4400 else 92
-
-    vol_overfill = OVERFILL_MAP.get(pump_vol)
-    pump_type = PUMP_TYPE_MAP.get((duration, None)) or PUMP_TYPE_MAP.get((None, pump_vol), "")
-
-    if dose and dose > 0 and pump_vol and vol_overfill:
-        dose_overfill = dose * (vol_overfill / pump_vol)
-        dose_overfill_rounded = int(50 * round(dose_overfill / 50))
-        concentration = dose_overfill_rounded / vol_overfill
-        drug_vol = dose_overfill_rounded / 50
-        ns_vol = vol_overfill - drug_vol
+    # --- Conditional UI Display based on user input ---
+    if not dose or not duration:
+        st.warning("⚠️ Please enter dose and select a duration to generate the dosage calculations")
     else:
-        dose_overfill, dose_overfill_rounded, concentration, drug_vol, ns_vol = 0.0, 0, 0.0, 0, 0
+        pump_vol = None
+        if override_pump:
+            if duration == 46: pump_vol = 230
+            elif duration == 48: pump_vol = 240
+            else:
+                st.warning("⚠️ Override is only applicable for 46 hr or 48 hr durations.")
+                override_pump = False
 
-    st.markdown("---")
-    st.subheader("For Verification")
-    col_m1, col_m2, col_m3 = st.columns(3)
-    col_m1.metric(label="Pump Volume", value=f"{pump_vol} mL" if pump_vol else "-")
-    col_m2.metric(label="Pump Volume with Overfill", value=f"{vol_overfill} mL" if vol_overfill else "-")
-    col_m3.metric(label="Dose with Overfill", value=f"{dose_overfill:.1f} mg" if dose_overfill else "-")
+        if not override_pump and dose is not None:
+            if duration == 24: pump_vol = 240
+            elif duration == 96: pump_vol = 192
+            elif duration == 120: pump_vol = 240
+            elif duration == 48: pump_vol = 240 if dose > 4600 else 96
+            elif duration == 46: pump_vol = 230 if dose > 4400 else 92
 
-    h_col1, h_col2 = st.columns(2)
-    h_col1.info(f"**Dose with Overfill (Rounded):**\n\n ## `{dose_overfill_rounded} mg`")
-    h_col2.success(f"**Final Concentration:**\n\n ## `{concentration:.1f} mg/mL`")
+        vol_overfill = OVERFILL_MAP.get(pump_vol)
+        pump_type = PUMP_TYPE_MAP.get((duration, None)) or PUMP_TYPE_MAP.get((None, pump_vol), "")
 
-    st.markdown("---")
-    st.subheader("For Compounding")
-    col_c1, col_c2 = st.columns(2)
-    label_style, value_style = "font-size: 0.9rem; color: #ffffff;", "font-size: 2rem; line-height: 1.4; word-wrap: break-word; white-space: normal;"
-    col_c1.markdown(f'<div style="{label_style}">Pump Volume with Overfill</div><div style="{value_style}">{f"{vol_overfill} mL" if vol_overfill else "-"}</div>', unsafe_allow_html=True)
-    col_c2.markdown(f'<div style="{label_style}">Pump Type</div><div style="{value_style}">{pump_type if pump_type else "-"}</div>', unsafe_allow_html=True)
-    
-    st.html("<br>")
-    h_col3, h_col4 = st.columns(2)
-    h_col3.info(f"**Volume of 5-FU:**\n\n ## `{f'{drug_vol:g}' if drug_vol else '0'} mL`")
-    h_col4.success(f"**Volume of NS:**\n\n ## `{f'{ns_vol:g}' if ns_vol else '0'} mL`")
+        if dose and dose > 0 and pump_vol and vol_overfill:
+            dose_overfill = dose * (vol_overfill / pump_vol)
+            dose_overfill_rounded = int(50 * round(dose_overfill / 50))
+            concentration = dose_overfill_rounded / vol_overfill
+            drug_vol = dose_overfill_rounded / 50
+            ns_vol = vol_overfill - drug_vol
+        else:
+            dose_overfill, dose_overfill_rounded, concentration, drug_vol, ns_vol = 0.0, 0, 0.0, 0, 0
+
+        st.markdown("---")
+        st.subheader("For Verification")
+        col_m1, col_m2, col_m3 = st.columns(3)
+        col_m1.metric(label="Pump Volume", value=f"{pump_vol} mL" if pump_vol else "-")
+        col_m2.metric(label="Pump Volume with Overfill", value=f"{vol_overfill} mL" if vol_overfill else "-")
+        col_m3.metric(label="Dose with Overfill", value=f"{dose_overfill:.1f} mg" if dose_overfill else "-")
+
+        h_col1, h_col2 = st.columns(2)
+        h_col1.info(f"**Dose with Overfill (Rounded):**\n\n ## `{dose_overfill_rounded} mg`")
+        h_col2.success(f"**Final Concentration:**\n\n ## `{concentration:.1f} mg/mL`")
+
+        st.markdown("---")
+        st.subheader("For Compounding")
+        col_c1, col_c2 = st.columns(2)
+        label_style, value_style = "font-size: 0.9rem; color: #ffffff;", "font-size: 2rem; line-height: 1.4; word-wrap: break-word; white-space: normal;"
+        col_c1.markdown(f'<div style="{label_style}">Pump Volume with Overfill</div><div style="{value_style}">{f"{vol_overfill} mL" if vol_overfill else "-"}</div>', unsafe_allow_html=True)
+        col_c2.markdown(f'<div style="{label_style}">Pump Type</div><div style="{value_style}">{pump_type if pump_type else "-"}</div>', unsafe_allow_html=True)
+        
+        st.html("<br>")
+        h_col3, h_col4 = st.columns(2)
+        h_col3.info(f"**Volume of 5-FU:**\n\n ## `{f'{drug_vol:g}' if drug_vol else '0'} mL`")
+        h_col4.success(f"**Volume of NS:**\n\n ## `{f'{ns_vol:g}' if ns_vol else '0'} mL`")
 
 
 # ==============================================================================
@@ -189,8 +193,6 @@ elif st.session_state.active_calculator == "FUDR":
             f"💡 **Note:** This calculation is specifically for **Day 1-14** of the 28-day cycle using a {pump_type} pump. "
             "Verify the pump's unique serial number, patient ID card, or sticker to confirm the accurate flow rate before preparation."
         )
-    else:
-        st.warning("⚠️ Please enter patient weight, height, and select a gender to generate the dosage calculations and compounding summary.")
 
 
 # ==============================================================================
@@ -268,4 +270,4 @@ elif st.session_state.active_calculator == "BSA":
         
         st.info("💡 **Clinical Note:** Mosteller remains the default calculation model used across modern Electronic Health Records (EHR) networks for standard surface-area-based chemotherapeutic indexing.")
     else:
-        st.warning("⚠️ Please enter patient weight, height, and select a gender to verify biometric index values.")
+        st.warning("⚠️ Please provide Patient Gender, Weight, and Height inputs to verify biometric index values.")
