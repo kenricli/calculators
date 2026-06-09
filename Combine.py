@@ -37,7 +37,7 @@ if st.sidebar.button(
     st.rerun()
 
 st.sidebar.markdown("---")
-st.sidebar.caption("v2.1.0 | Clinical Decision Support Tool")
+st.sidebar.caption("v2.1.0 | Dedicated to the PCMB Team")
 
 
 # ==============================================================================
