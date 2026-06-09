@@ -192,14 +192,14 @@ elif st.session_state.active_calculator == "FUDR":
         })
         st.dataframe(df_components, hide_index=True, use_container_width=True)
 
-        st.subheader("🔍 For Verification")
-        verification_text = (
+        st.subheader("✏️ To Fill Out Admin Instructions")
+        admin_text = (
             f"1. **Floxuridine dose:** {dose_rate:g} mg/kg/day × {dosing_weight:.1f} kg = **Daily dose of Floxuridine:** {daily_dose:.2f} mg/day  \n"
             f"2. **Daily dose of Floxuridine:** {daily_dose:.2f} mg/day / **flow rate:** {flow_rate} mL/day = **pump concentration:** {pump_concentration:.2f} mg/mL  \n"
             f"3. **Pump concentration:** {pump_concentration:.2f} mg/mL × **pump volume:** {int(pump_volume)} mL = **total dose of FLOXURIDINE:** {final_fudr_dose} mg (rounded to closest 5 mg)  \n"
             f"4. Please insert total dose into Floxuridine dosing field above"
         )
-        st.success(verification_text)
+        st.success(admin_text)
 
         # Protocol Safety Note
         st.info(
