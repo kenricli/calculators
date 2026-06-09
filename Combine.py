@@ -162,12 +162,16 @@ elif st.session_state.active_calculator == "FUDR":
 
     st.divider()
 
-    if real_weight and height_cm and gender:
+    if real_weight and height_cm and gender and dose_rate is not None:
         height_inches = height_cm / 2.54
         inches_above_5ft = max(0.0, height_inches - 60.0)
         ibw = (50.0 if gender == "Male" else 45.5) + (2.3 * inches_above_5ft)
         is_overweight = real_weight > (1.35 * ibw)
         dosing_weight = (ibw + real_weight) / 2.0 if is_overweight else real_weight
+        
+        # --- Calculations for Output Message ---
+        daily_dose = dose_rate * dosing_weight
+        pump_concentration = daily_dose / flow_rate
         
         raw_fudr_dose = (dose_rate * dosing_weight * pump_volume) / flow_rate
         final_fudr_dose = round(raw_fudr_dose / 5) * 5
@@ -177,6 +181,16 @@ elif st.session_state.active_calculator == "FUDR":
         else:
             st.info(f"✅ Using **Actual Body Weight**: {real_weight} kg.")
             
+        # --- Added Request: For Verification Output Message ---
+        st.subheader("🔍 For Verification")
+        verification_text = (
+            f"1. **Floxuridine dose:** {dose_rate:g} mg/kg/day × {dosing_weight:.1f} kg = **Daily dose of Floxuridine:** {daily_dose:.2f} mg/day  \n"
+            f"2. **Daily dose of Floxuridine:** {daily_dose:.2f} mg/day / **flow rate:** {flow_rate} mL/day = **pump concentration:** {pump_concentration:.2f} mg/mL  \n"
+            f"3. **Pump concentration:** {pump_concentration:.2f} mg/mL × **pump volume:** {int(pump_volume)} mL = **total dose of FLOXURIDINE:** {final_fudr_dose} mg (rounded to closest 5 mg)  \n"
+            f"4. Please insert total dose into Floxuridine dosing field above"
+        )
+        st.info(verification_text)
+        
         st.subheader("📋 Order & Compounding Summary")
         m_col1, m_col2 = st.columns(2)
         m_col1.metric(label="Calculated FUDR Dose", value=f"{raw_fudr_dose:.2f} mg")
@@ -261,10 +275,10 @@ elif st.session_state.active_calculator == "BSA":
                 "Gehan & George"
             ],
             "Calculated Index Value": [
-                f"{bsa_mosteller:.3f} m²",
-                f"{bsa_dubois:.3f} m²",
-                f"{bsa_haycock:.3f} m²",
-                f"{bsa_gehan:.3f} m²"
+                "%.3f m²" % bsa_mosteller,
+                "%.3f m²" % bsa_dubois,
+                "%.3f m²" % bsa_haycock,
+                "%.3f m²" % bsa_gehan
             ]
         })
         st.dataframe(df_bsa, hide_index=True, use_container_width=True)
