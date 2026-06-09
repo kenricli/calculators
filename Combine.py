@@ -13,8 +13,8 @@ if "active_calculator" not in st.session_state:
     st.session_state.active_calculator = "5-FU"  # Default calculator on load
 
 # --- Epic/Beacon-Style Sidebar Navigation ---
-st.title("## 🧮 Calculator Suits")
-st.caption("### Select a calculator below")
+st.sidebar.markdown("## 🧮 Calculator Suits")
+st.sidebar.markdown("### Select a calculator below")
 st.sidebar.markdown("---")
 
 # Use columns or individual buttons to mimic clinical workflow selection tabs
