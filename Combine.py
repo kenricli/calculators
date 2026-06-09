@@ -199,7 +199,7 @@ elif st.session_state.active_calculator == "FUDR":
             f"3. **Pump concentration:** {pump_concentration:.2f} mg/mL × **pump volume:** {int(pump_volume)} mL = **total dose of FLOXURIDINE:** {final_fudr_dose} mg (rounded to closest 5 mg)  \n"
             f"4. Please insert total dose into Floxuridine dosing field above"
         )
-        st.info(verification_text)
+        st.success(verification_text)
 
         # Protocol Safety Note
         st.info(
