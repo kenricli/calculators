@@ -268,4 +268,4 @@ elif st.session_state.active_calculator == "BSA":
         
         st.info("💡 **Clinical Note:** Mosteller remains the default calculation model used across modern Electronic Health Records (EHR) networks for standard surface-area-based chemotherapeutic indexing.")
     else:
-        st.warning("⚠️ Please provide Patient Gender, Weight, and Height inputs to verify biometric index values.")
+        st.warning("⚠️ Please enter patient weight, height, and select a gender to verify biometric index values.")
