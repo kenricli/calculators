@@ -13,8 +13,10 @@ if "active_calculator" not in st.session_state:
     st.session_state.active_calculator = "5-FU"  # Default calculator on load
 
 # --- Epic/Beacon-Style Sidebar Navigation ---
-st.sidebar.markdown("## 🧮 Calculator Suits")
-st.sidebar.markdown("### Select a calculator below")
+st.sidebar.markdown("## 🧮 Calculator Suite")
+
+# --- Made this text smaller using inline HTML styling ---
+st.sidebar.markdown('<p style="font-size: 0.85rem; font-weight: 500; margin-bottom: 0px;">Select a calculator below:</p>', unsafe_allow_html=True)
 st.sidebar.markdown("---")
 
 # Use columns or individual buttons to mimic clinical workflow selection tabs
@@ -313,49 +315,4 @@ elif st.session_state.active_calculator == "FUDR":
             else:
                 ibw = 45.5 + (2.3 * inches_above_5ft)
                 
-            is_overweight = real_weight > (1.35 * ibw)
-            dosing_weight = (ibw + real_weight) / 2.0 if is_overweight else real_weight
-            
-            raw_fudr_dose = (dose_rate * dosing_weight * pump_volume) / flow_rate
-            final_fudr_dose = round(raw_fudr_dose / 5) * 5
-            
-            return ibw, dosing_weight, is_overweight, raw_fudr_dose, final_fudr_dose
-
-        # --- Conditional Layout Execution ---
-        if real_weight and height_cm and gender:
-            
-            ibw, dosing_weight, is_overweight, raw_fudr_dose, final_fudr_dose = calculate_fudr_dose(
-                gender, height_cm, real_weight, dose_rate, pump_volume, flow_rate
-            )
-            
-            if is_overweight:
-                st.warning(f"⚠️ Patient is >35% over IBW. Using **Average Body Weight**: {dosing_weight:.1f} kg (IBW: {ibw:.1f} kg).")
-            else:
-                st.info(f"✅ Patient weight is within standard dosing limits. Using **Actual Body Weight**: {real_weight} kg (IBW: {ibw:.1f} kg).")
-                
-            st.subheader("📋 Order & Compounding Summary")
-
-            m_col1, m_col2 = st.columns(2)
-            m_col1.metric(label=f"Calculated FUDR Dose (Raw - {pump_type})", value=f"{raw_fudr_dose:.2f} mg")
-            m_col2.metric(label="Final FUDR Dose (Rounded to nearest 5 mg)", value=f"{final_fudr_dose} mg")
-
-            st.markdown("#### Total Mixture Components")
-
-            df_components = pd.DataFrame({
-                "Component": ["FUDR", "Dexamethasone", "Heparin", "Normal Saline (NS)"],
-                "Target Protocol Dose / Volume": [
-                    f"{final_fudr_dose} mg",
-                    specs["dex"],
-                    specs["heparin"],
-                    f"Quantity sufficient (QS) to total {int(pump_volume)} mL"
-                ]
-            })
-            st.dataframe(df_components, hide_index=True, use_container_width=True)
-
-            st.info(
-                f"💡 **Note:** This calculation is specifically for **Day 1-14** of the 28-day cycle using a {pump_type} pump. "
-                "Verify the pump's unique serial number, patient ID card, or sticker to confirm the accurate flow rate before preparation."
-            )
-
-        else:
-            st.warning("⚠️ Please enter patient weight, height, and select a gender to generate the dosage calculations and compounding summary.")
+            is
