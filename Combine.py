@@ -38,7 +38,7 @@ if st.sidebar.button(
     st.rerun()
 
 if st.sidebar.button(
-    "📏 Anthropometrics & BSA Suite", 
+    "📏 Weight & BSA", 
     use_container_width=True, 
     type="primary" if st.session_state.active_calculator == "BSA" else "secondary"
 ):
@@ -214,7 +214,7 @@ elif st.session_state.active_calculator == "FUDR":
 # 🩻 CALCULATOR 3: ANTHROPOMETRICS & BSA SUITE
 # ==============================================================================
 elif st.session_state.active_calculator == "BSA":
-    st.title("📏 Anthropometrics & BSA Suite")
+    st.title("📏 Weight & BSA Calculator")
     st.markdown("### Patient Weight & BSA Indexing")
     st.write("Simultaneously evaluate Body Surface Area (BSA) across multiple foundational oncological equations.")
 
