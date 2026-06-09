@@ -138,7 +138,7 @@ elif st.session_state.active_calculator == "FUDR":
     if st.session_state.disclaimer_agreed is None:
         st.title("🩺 HAI Pump Calculator")
         st.subheader("⚠️ Medical Disclaimer & Terms of Use")
-        st.warning("**CRITICAL NOTICE:** This calculator is intended for reference and educational purposes only...")
+        st.warning("**CRITICAL NOTICE:** This calculator is intended for reference and educational purposes only")
         st.markdown("""
             By proceeding, you acknowledge and agree that:
             * You will **manually verify all dosage calculations** against official protocols.
