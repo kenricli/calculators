@@ -192,7 +192,21 @@ elif st.session_state.active_calculator == "FUDR":
         })
         st.dataframe(df_components, hide_index=True, use_container_width=True)
 
-        st.subheader("✏️ To Fill Out Admin Instructions")
+        # Build clean string version for clipboard copying (removing raw markdown wrappers if necessary)
+        clean_admin_text = (
+            f"1. Floxuridine dose: {dose_rate:g} mg/kg/day × {dosing_weight:g} kg = Daily dose of Floxuridine: {daily_dose:.2f} mg/day\n"
+            f"2. Daily dose of Floxuridine: {daily_dose:.2f} mg/day / flow rate: {flow_rate} mL/day = pump concentration: {pump_concentration:.2f} mg/mL\n"
+            f"3. Pump concentration: {pump_concentration:.2f} mg/mL × pump volume: {int(pump_volume)} mL = total dose of FLOXURIDINE: {final_fudr_dose} mg (rounded to closest 5 mg)\n"
+            f"4. Please insert total dose into Floxuridine dosing field above"
+        )
+
+        # --- Updated Header and Copy Layout ---
+        title_col, btn_col = st.columns([0.8, 0.2], vertical_alignment="bottom")
+        with title_col:
+            st.subheader("✏️ To Fill Out Admin Instructions")
+        with btn_col:
+            st.copy_to_clipboard(clean_admin_text, label="Copy Text", icon="📋")
+
         admin_text = (
             f"1. **Floxuridine dose:** {dose_rate:g} mg/kg/day × {dosing_weight:g} kg = **Daily dose of Floxuridine:** {daily_dose:.2f} mg/day  \n"
             f"2. **Daily dose of Floxuridine:** {daily_dose:.2f} mg/day / **flow rate:** {flow_rate} mL/day = **pump concentration:** {pump_concentration:.2f} mg/mL  \n"
