@@ -151,7 +151,7 @@ elif st.session_state.active_calculator == "FUDR":
     col1, col2, col3 = st.columns(3)
     with col1:
         gender = st.selectbox("Patient Gender", options=["Male", "Female"], index=None, placeholder="Select gender...")
-        dose_selection = st.selectbox("Starting Dose (mg/kg)", options=[0.12, 0.08, 0.06, "Custom..."], index=0)
+        dose_selection = st.selectbox("Starting Dose (mg/kg)", options=[0.12, 0.08, 0.06, "Custom..."], index=0, format_func=lambda x: f"{x} mg/kg")
         dose_rate = st.number_input("Enter Custom Dose (mg/kg)", min_value=0.00, max_value=2.00, value=None) if dose_selection == "Custom..." else dose_selection
     with col2:
         real_weight = st.number_input("Patient Weight (kg)", min_value=0.0, max_value=250.0, value=None, format="%g", placeholder="Enter weight...")
