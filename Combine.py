@@ -306,14 +306,14 @@ def render_carboplatin_calculator():
     with col1:
         st.subheader("Patient Demographics")
         gender = st.radio("Patient Gender", ["Male", "Female"], horizontal=True)
-        age = st.number_input("Patient Age (years)", min_value=1, max_value=120, value=None, step=1, format="%g")
-        weight = st.number_input("Patient Weight (kg)", min_value=1.0, max_value=300.0, value=None, format="%g")
-        height = st.number_input("Patient Height (cm)", min_value=50.0, max_value=250.0, value=None, format="%g")
+        age = st.number_input("Patient Age (years)", min_value=1, max_value=120, value=None, step=1, format="%g", placeholder="Enter age...")
+        weight = st.number_input("Patient Weight (kg)", min_value=1.0, max_value=300.0, value=None, format="%g",  placeholder="Enter weight...")
+        height = st.number_input("Patient Height (cm)", min_value=50.0, max_value=250.0, value=None, format="%g", placeholder="Enter height...")
 
     with col2:
         st.subheader("Clinical Parameters")
-        scr = st.number_input("Serum Creatinine (mg/dL)", min_value=0.1, max_value=10.0, value=None, step=0.01, format="%g")
-        target_auc = st.number_input("Target AUC", min_value=1.0, max_value=10.0, value=None, step=0.5, format="%g")
+        scr = st.number_input("Serum Creatinine (mg/dL)", min_value=0.1, max_value=10.0, value=None, step=0.01, format="%g", placeholder="Enter serum creatinine...")
+        target_auc = st.number_input("Target AUC", min_value=1.0, max_value=10.0, value=None, step=0.5, format="%g", placeholder="Enter AUC...")
 
         st.markdown("##### Dosing Adjustments")
         use_gog_floor = st.checkbox(
