@@ -22,7 +22,7 @@ st.sidebar.markdown("---")
 
 # Navigation Button Tabs
 if st.sidebar.button(
-    "🧪 Systemic Infusion (5-FU)", 
+    "🧪 SMARTeZ Pump Calculator", 
     use_container_width=True, 
     type="primary" if st.session_state.active_calculator == "5-FU" else "secondary"
 ):
@@ -30,7 +30,7 @@ if st.sidebar.button(
     st.rerun()
 
 if st.sidebar.button(
-    "🩺 Hepatic Arterial Infusion (FUDR)", 
+    "💉 HAI Pump Calculator", 
     use_container_width=True, 
     type="primary" if st.session_state.active_calculator == "FUDR" else "secondary"
 ):
@@ -136,7 +136,7 @@ if st.session_state.active_calculator == "5-FU":
 # 🫁 CALCULATOR 2: HEPATIC ARTERIAL INFUSION (FUDR)
 # ==============================================================================
 elif st.session_state.active_calculator == "FUDR":
-    st.title("🩺 HAI Pump Calculator")
+    st.title("💉 HAI Pump Calculator")
     st.markdown("### FUDR Dose Calculation (1 Cycle = 28 Days)")
     st.divider()
 
