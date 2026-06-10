@@ -310,7 +310,7 @@ elif st.session_state.active_calculator == "FUDR":
 # 💊 CALCULATOR 3: CARBOPLATIN AUC CALCULATOR (CALVERT FORMULA)
 # ==============================================================================
 elif st.session_state.active_calculator == "Carboplatin":
-    st.title("💊 Carboplatin AUC Calculator (Calvert Formula)")
+    st.title("💊 Carboplatin AUC Calculator")
     st.write("Calculate Carboplatin dosing based on target AUC and estimated Creatinine Clearance.")
     st.markdown("---")
 
