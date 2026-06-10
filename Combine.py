@@ -9,6 +9,57 @@ st.set_page_config(
     layout="centered"
 )
 
+
+# ==============================================================================
+# 🧮 HELPER FUNCTIONS (CARBOPLATIN AUC)
+# ==============================================================================
+def calculate_bmi(weight_kg, height_cm):
+    """Calculates Body Mass Index (BMI)."""
+    if height_cm and height_cm > 0:
+        return weight_kg / ((height_cm / 100) ** 2)
+    return 0
+
+
+def calculate_ibw(gender, height_cm):
+    """Calculates Ideal Body Weight (IBW) using Devine Formula."""
+    if not height_cm:
+        return 0
+    height_in_inches = height_cm / 2.54
+    if height_in_inches < 60:
+        height_in_inches = 60
+
+    if gender == "Male":
+        return 50.0 + 2.3 * (height_in_inches - 60)
+    else:  # Female
+        return 45.5 + 2.3 * (height_in_inches - 60)
+
+
+def calculate_adjusted_weight(actual_weight, ibw):
+    """Calculates Adjusted Body Weight (AjBW) using a 40% correction factor."""
+    return ibw + 0.4 * (actual_weight - ibw)
+
+
+def calculate_crcl(gender, age, dosing_weight, scr):
+    """Calculates Creatinine Clearance (CrCl) using Cockcroft-Gault."""
+    if not scr or scr <= 0 or not age or age <= 0:
+        return 0
+
+    crcl = ((140 - age) * dosing_weight) / (72 * scr)
+
+    if gender == "Female":
+        crcl *= 0.85
+
+    return crcl
+
+
+def format_trailing(value, precision=1):
+    """Formats a float to remove trailing zeros and unnecessary decimal points."""
+    rounded = round(value, precision)
+    if rounded.is_integer():
+        return f"{int(rounded)}"
+    return f"{rounded}".rstrip("0").rstrip(".")
+
+
 # --- 1. Session State Initialization for Navigation ---
 if "active_calculator" not in st.session_state:
     st.session_state.active_calculator = "5-FU"  # Default calculator on load
@@ -35,6 +86,14 @@ if st.sidebar.button(
     type="primary" if st.session_state.active_calculator == "FUDR" else "secondary"
 ):
     st.session_state.active_calculator = "FUDR"
+    st.rerun()
+
+if st.sidebar.button(
+    "💊 Carboplatin AUC Calculator", 
+    use_container_width=True, 
+    type="primary" if st.session_state.active_calculator == "Carboplatin" else "secondary"
+):
+    st.session_state.active_calculator = "Carboplatin"
     st.rerun()
 
 if st.sidebar.button(
@@ -192,7 +251,7 @@ elif st.session_state.active_calculator == "FUDR":
         })
         st.dataframe(df_components, hide_index=True, use_container_width=True)
 
-# Build clean string version for clipboard copying
+        # Build clean string version for clipboard copying
         clean_admin_text = (
             f"1. Floxuridine dose: {dose_rate:g} mg/kg/day × {dosing_weight:g} kg = Daily dose of Floxuridine: {daily_dose:.2f} mg/day\\n"
             f"2. Daily dose of Floxuridine: {daily_dose:.2f} mg/day / flow rate: {flow_rate} mL/day = pump concentration: {pump_concentration:.2f} mg/mL\\n"
@@ -205,8 +264,6 @@ elif st.session_state.active_calculator == "FUDR":
         with title_col:
             st.subheader("✏️ To Fill Out Admin Instructions")
         with btn_col:
-            # Custom HTML button that utilizes the browser's clipboard API safely
-            # Escaping the string properly to prevent JS breaking on special characters
             escaped_text = clean_admin_text.replace("'", "\\'").replace("\n", "\\n")
             
             html_button = f"""
@@ -248,8 +305,118 @@ elif st.session_state.active_calculator == "FUDR":
     else:
         st.warning("⚠️ Please enter patient weight, height, and select a gender to generate the dosage calculations and compounding summary.")
 
+
 # ==============================================================================
-# 🩻 CALCULATOR 3: ANTHROPOMETRICS & BSA SUITE
+# 💊 CALCULATOR 3: CARBOPLATIN AUC CALCULATOR (CALVERT FORMULA)
+# ==============================================================================
+elif st.session_state.active_calculator == "Carboplatin":
+    st.title("💊 Carboplatin AUC Calculator (Calvert Formula)")
+    st.write("Calculate Carboplatin dosing based on target AUC and estimated Creatinine Clearance.")
+    st.markdown("---")
+
+    # --- Input Layout ---
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.subheader("Patient Demographics")
+        gender = st.radio("Gender", ["Male", "Female"], horizontal=True)
+        age = st.number_input("Age (years)", min_value=1, max_value=120, value=None, step=1, format="%g")
+        weight = st.number_input("Actual Weight (kg)", min_value=1.0, max_value=300.0, value=None, step=1.0, format="%g")
+        height = st.number_input("Height (cm)", min_value=50.0, max_value=250.0, value=None, step=1.0, format="%g")
+
+    with col2:
+        st.subheader("Clinical Parameters")
+        scr = st.number_input("Serum Creatinine (mg/dL)", min_value=0.1, max_value=10.0, value=None, step=0.01, format="%g")
+        target_auc = st.number_input("Target AUC", min_value=1.0, max_value=10.0, value=None, step=0.5, format="%g")
+
+        st.markdown("##### Dosing Adjustments")
+        use_gog_floor = st.checkbox(
+            "Apply GOG Recommendation (SCr floor of 0.7 mg/dL)",
+            value=False,
+            help="If Serum Creatinine is less than 0.7, rounds up to 0.7 to avoid overestimating CrCl."
+        )
+        cap_crcl = st.checkbox("Cap GFR/CrCl at 125 mL/min (FDA Recommendation)", value=True)
+
+    st.markdown("---")
+
+    # --- Form Validation & Calculations ---
+    if age and weight and height and scr and target_auc:
+        bmi = calculate_bmi(weight, height)
+        ibw = calculate_ibw(gender, height)
+        ajbw = calculate_adjusted_weight(weight, ibw)
+
+        dosing_weight = weight
+        weight_strategy_used = "Actual Body Weight"
+
+        if bmi >= 25.0:
+            with col2:
+                use_adjusted = st.checkbox(
+                    f"Use Adjusted Body Weight ({format_trailing(ajbw)} kg) instead of Actual Weight",
+                    value=False,
+                    help="Often considered for overweight/obese patients to prevent CrCl overestimation."
+                )
+                if use_adjusted:
+                    dosing_weight = ajbw
+                    weight_strategy_used = "Adjusted Body Weight"
+        else:
+            with col2:
+                st.info("Patient BMI is normal (< 25). Actual Body Weight used.")
+
+        final_scr = scr
+        scr_adjusted_msg = ""
+        if use_gog_floor and scr < 0.7:
+            final_scr = 0.7
+            scr_adjusted_msg = "*(Rounded up to 0.7 mg/dL per GOG)*"
+
+        raw_crcl = calculate_crcl(gender, age, dosing_weight, final_scr)
+        final_crcl = min(raw_crcl, 125.0) if cap_crcl else raw_crcl
+        carboplatin_dose = target_auc * (final_crcl + 25)
+
+        # --- Results Display ---
+        st.subheader("Calculation Results")
+        res_col1, res_col2, res_col3 = st.columns(3)
+
+        with res_col1:
+            st.metric(
+                label="Estimated CrCl",
+                value=f"{format_trailing(final_crcl)} mL/min",
+                delta=f"Capped (Raw: {format_trailing(raw_crcl)})" if cap_crcl and raw_crcl > 125 else None,
+                delta_color="inverse"
+            )
+            st.caption(f"Calculated via **{weight_strategy_used}**")
+            if scr_adjusted_msg:
+                st.caption(scr_adjusted_msg)
+
+        with res_col2:
+            st.markdown("**Recommended Carboplatin Dose**")
+            st.markdown(f"<h2 style='color: #FF4B4B; margin-top: -10px;'>{carboplatin_dose:.0f} mg</h2>", unsafe_allow_html=True)
+
+        with res_col3:
+            st.metric(label="Patient BMI", value=f"{format_trailing(bmi)} kg/m²")
+            st.caption(f"IBW: {format_trailing(ibw)} kg | AjBW: {format_trailing(ajbw)} kg")
+
+    else:
+        st.warning("⚠️ Please complete all patient information and clinical parameter fields above to view dosing outputs.")
+
+    # --- Clinical Notes & Context ---
+    with st.expander("Clinical Notes & Formulas Used"):
+        st.markdown(
+            """
+        * **Calvert Formula:** $\\text{Dose (mg)} = \\text{Target AUC} \\times (\\text{CrCl} + 25)$
+        * **Cockcroft-Gault Equation:** $$\\text{CrCl} = \\frac{(140 - \\text{Age}) \\times \\text{Dosing Weight (kg)}}{72 \\times \\text{Serum Creatinine (mg/dL)}}$$
+          *(Multiplied by 0.85 for female patients)*
+        * **GOG Serum Creatinine Recommendation:** Low serum creatinine artificially drives up calculated CrCl. The Gynecologic Oncology Group (GOG) guidelines suggest rounding up a low baseline creatinine value to a minimum of **0.7 mg/dL** to provide a safety buffer against over-dosing.
+        * **Weight Dosing Strategy:** * **Ideal Body Weight (IBW):** Calculated using the Devine formula.
+            * **Adjusted Body Weight (AjBW):** Calculated as $\\text{IBW} + 0.4 \\times (\\text{Actual Weight} - \\text{IBW})$.
+        * **FDA Warning:** The FDA recommends capping the maximum GFR/CrCl at **125 mL/min** to prevent unintended toxicity.
+        """
+        )
+
+    st.caption("Disclaimer: This tool is for educational purposes only and should not replace professional clinical judgment.")
+
+
+# ==============================================================================
+# 🩻 CALCULATOR 4: ANTHROPOMETRICS & BSA SUITE
 # ==============================================================================
 elif st.session_state.active_calculator == "BSA":
     st.title("📏 Weight & BSA Calculator")
@@ -285,7 +452,6 @@ elif st.session_state.active_calculator == "BSA":
         adj_weight_val = ibw_val + 0.4 * (bsa_weight - ibw_val)
         percent_ibw = (bsa_weight / ibw_val) * 100
 
-        # Formatted rounded to 1 decimal place maximum, but dropping trailing zeros via :g
         formatted_ibw = f"{round(ibw_val, 1):g}"
         formatted_adjbw = f"{round(adj_weight_val, 1):g}"
         formatted_pct = f"{round(percent_ibw, 1):g}"
@@ -298,7 +464,6 @@ elif st.session_state.active_calculator == "BSA":
         st.subheader("📋 Clinician Weight Workspace")
         m_col1, m_col2, m_col3 = st.columns(3)
         
-        # Display formatted string variables without trailing zeroes
         m_col1.metric(label="Ideal Body Weight (IBW)", value=f"{formatted_ibw} kg")
         m_col2.metric(label="Adjusted Body Weight (AdjBW)", value=f"{formatted_adjbw} kg")
         m_col3.metric(label="Percent of IBW", value=f"{formatted_pct} %")
