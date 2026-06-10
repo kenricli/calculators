@@ -198,7 +198,7 @@ if st.session_state.active_calculator == "5-FU":
 elif st.session_state.active_calculator == "FUDR":
     st.title("💉 HAI Pump Calculator")
     st.markdown("### FUDR Dose Calculation (1 Cycle = 28 Days)")
-    st.write("Calculate FUDR dose based on inital dose and flow rate.")
+    st.write("Calculate FUDR dose based on inital starting dose and flow rate.")
     st.divider()
 
     pump_type = st.selectbox("Select Pump Type", options=["Intera (Codman)", "Medtronic"], index=0)
@@ -422,7 +422,7 @@ elif st.session_state.active_calculator == "Carboplatin":
 
 
 # ==============================================================================
-# 🩻 CALCULATOR 4: ANTHROPOMETRICS & BSA SUITE
+# 🩻 CALCULATOR 4: Weight & BSA SUITE
 # ==============================================================================
 elif st.session_state.active_calculator == "BSA":
     st.title("📏 Weight & BSA Calculator")
