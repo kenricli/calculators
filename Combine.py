@@ -316,7 +316,7 @@ def render_carboplatin_calculator():
 
         st.markdown("##### Dosing Adjustments")
         use_gog_floor = st.checkbox(
-            "Apply GOG Recommendation (SCr floor of 0.7 mg/dL)",
+            "Apply GOG Recommendation (Round up SCr to 0.7 mg/dL)",
             value=False,
             help="If Serum Creatinine is less than 0.7, rounds up to 0.7 to avoid overestimating CrCl."
         )
