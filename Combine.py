@@ -114,7 +114,7 @@ st.sidebar.caption("v2.2.1 | Clinical Decision Support Tool")
 if st.session_state.active_calculator == "5-FU":
     st.title("🧪 SMARTeZ Pump Calculator")
     st.markdown("### 5-FU Dose Calculation")
-    st.write("Calculate the 5-FU dose with overfill based on pump type.")
+    st.write("Calculate 5-FU dose with overfill based on pump type.")
 
     st.divider()
 
@@ -198,6 +198,7 @@ if st.session_state.active_calculator == "5-FU":
 elif st.session_state.active_calculator == "FUDR":
     st.title("💉 HAI Pump Calculator")
     st.markdown("### FUDR Dose Calculation (1 Cycle = 28 Days)")
+    st.write("Calculate FUDR dose based on inital dose and flow rate.")
     st.divider()
 
     pump_type = st.selectbox("Select Pump Type", options=["Intera (Codman)", "Medtronic"], index=0)
