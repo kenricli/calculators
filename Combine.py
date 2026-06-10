@@ -215,7 +215,7 @@ def render_fudr_calculator():
     with col2:
         real_weight = st.number_input("Patient Weight (kg)", min_value=0.0, max_value=250.0, value=None, format="%g", placeholder="Enter weight...")
         flow_selection = st.selectbox("Pump Flow Rate (mL/day)", options=[1.4, 1.3, 1.2, 1.1, "Custom..."], index=1, format_func=lambda x: f"{x} mL/day" if isinstance(x, (int, float)) else x)
-        flow_rate = st.number_input("Enter Custom Flow Rate (mL/day)", min_value=0.1, max_value=10.0, value=None, format="%g") if flow_selection == "Custom..." else flow_selection
+        flow_rate = st.number_input("Enter Custom Flow Rate (mL/day)", min_value=0.1, max_value=2.0, value=None, format="%g") if flow_selection == "Custom..." else flow_selection
     with col3:
         height_cm = st.number_input("Patient Height (cm)", min_value=0.0, max_value=250.0, value=None, format="%g", placeholder="Enter height...")
         st.metric(label="Pump Volume (Fixed)", value=f"{int(pump_volume)} mL")
