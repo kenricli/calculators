@@ -214,15 +214,16 @@ def render_fudr_calculator():
         dose_rate = st.number_input("Enter Custom Dose (mg/kg)", min_value=0.00, max_value=0.12, value=None) if dose_selection == "Custom..." else dose_selection
     with col2:
         real_weight = st.number_input("Patient Weight (kg)", min_value=0.0, max_value=250.0, value=None, format="%g", placeholder="Enter weight...")
-        flow_rate = st.selectbox("Pump Flow Rate (mL/day)", options=[1.4, 1.3, 1.2, 1.1], index=1, format_func=lambda x: f"{x} mL/day")
+        flow_selection = st.selectbox("Pump Flow Rate (mL/day)", options=[1.4, 1.3, 1.2, 1.1, "Custom..."], index=1, format_func=lambda x: f"{x} mL/day" if isinstance(x, (int, float)) else x)
+        flow_rate = st.number_input("Enter Custom Flow Rate (mL/day)", min_value=0.1, max_value=10.0, value=None, format="%g") if flow_selection == "Custom..." else flow_selection
     with col3:
         height_cm = st.number_input("Patient Height (cm)", min_value=0.0, max_value=250.0, value=None, format="%g", placeholder="Enter height...")
         st.metric(label="Pump Volume (Fixed)", value=f"{int(pump_volume)} mL")
 
     st.divider()
 
-    if not (real_weight and height_cm and gender and dose_rate is not None):
-        st.warning("⚠️ Please enter patient weight, height, and select a gender to generate calculations.")
+    if not (real_weight and height_cm and gender and dose_rate is not None and flow_rate is not None):
+        st.warning("⚠️ Please complete all inputs (weight, height, gender, dose, and flow rate) to generate calculations.")
         st.caption("Disclaimer: This tool is for educational purposes only and should not replace professional clinical judgment.")
         return
 
@@ -253,7 +254,7 @@ def render_fudr_calculator():
 
     clean_admin_text = (
         f"1. Floxuridine dose: {dose_rate:g} mg/kg/day × {dosing_weight:g} kg = Daily dose of Floxuridine: {daily_dose:.2f} mg/day\\n"
-        f"2. Daily dose of Floxuridine: {daily_dose:.2f} mg/day / flow rate: {flow_rate} mL/day = pump concentration: {pump_concentration:.2f} mg/mL\\n"
+        f"2. Daily dose of Floxuridine: {daily_dose:.2f} mg/day / flow rate: {flow_rate:g} mL/day = pump concentration: {pump_concentration:.2f} mg/mL\\n"
         f"3. Pump concentration: {pump_concentration:.2f} mg/mL × pump volume: {int(pump_volume)} mL = total dose of FLOXURIDINE: {final_fudr_dose} mg (rounded to closest 5 mg)\\n"
         f"4. Please insert total dose into Floxuridine dosing field above"
     )
@@ -279,7 +280,7 @@ def render_fudr_calculator():
 
     admin_text = (
         f"1. **Floxuridine dose:** {dose_rate:g} mg/kg/day × {dosing_weight:g} kg = **Daily dose of Floxuridine:** {daily_dose:.2f} mg/day  \n"
-        f"2. **Daily dose of Floxuridine:** {daily_dose:.2f} mg/day / **flow rate:** {flow_rate} mL/day = **pump concentration:** {pump_concentration:.2f} mg/mL  \n"
+        f"2. **Daily dose of Floxuridine:** {daily_dose:.2f} mg/day / **flow rate:** {flow_rate:g} mL/day = **pump concentration:** {pump_concentration:.2f} mg/mL  \n"
         f"3. **Pump concentration:** {pump_concentration:.2f} mg/mL × **pump volume:** {int(pump_volume)} mL = **total dose of FLOXURIDINE:** {final_fudr_dose} mg (rounded to closest 5 mg)  \n"
         f"4. Please insert total dose into Floxuridine dosing field above"
     )
