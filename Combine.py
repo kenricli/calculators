@@ -304,10 +304,10 @@ def render_carboplatin_calculator():
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("Patient Demographics")
-        gender = st.radio("Gender", ["Male", "Female"], horizontal=True)
+        gender = st.radio("Patient Gender", ["Male", "Female"], horizontal=True)
         age = st.number_input("Age (years)", min_value=1, max_value=120, value=None, step=1, format="%g")
-        weight = st.number_input("Actual Weight (kg)", min_value=1.0, max_value=300.0, value=None, step=1.0, format="%g")
-        height = st.number_input("Height (cm)", min_value=50.0, max_value=250.0, value=None, step=1.0, format="%g")
+        weight = st.number_input("Patient Weight (kg)", min_value=1.0, max_value=300.0, value=None, step=1.0, format="%g")
+        height = st.number_input("Patient Height (cm)", min_value=50.0, max_value=250.0, value=None, step=1.0, format="%g")
 
     with col2:
         st.subheader("Clinical Parameters")
