@@ -190,6 +190,7 @@ if st.session_state.active_calculator == "5-FU":
         h_col3.info(f"**Volume of 5-FU:**\n\n ## `{f'{drug_vol:g}' if drug_vol else '0'} mL`")
         h_col4.success(f"**Volume of NS:**\n\n ## `{f'{ns_vol:g}' if ns_vol else '0'} mL`")
 
+    st.caption("Disclaimer: This tool is for educational purposes only and should not replace professional clinical judgment.")
 
 # ==============================================================================
 # 🫁 CALCULATOR 2: HEPATIC ARTERIAL INFUSION (FUDR)
@@ -304,6 +305,8 @@ elif st.session_state.active_calculator == "FUDR":
         )
     else:
         st.warning("⚠️ Please enter patient weight, height, and select a gender to generate the dosage calculations and compounding summary.")
+
+    st.caption("Disclaimer: This tool is for educational purposes only and should not replace professional clinical judgment.")
 
 
 # ==============================================================================
