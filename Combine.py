@@ -211,10 +211,11 @@ def render_fudr_calculator():
     with col1:
         gender = st.selectbox("Patient Gender", options=["Male", "Female"], index=None, placeholder="Select gender...")
         dose_selection = st.selectbox("Starting Dose (mg/kg)", options=[0.12, 0.08, 0.06, "Custom..."], index=0, format_func=lambda x: f"{x} mg/kg" if isinstance(x, (int, float)) else x)
-        dose_rate = st.number_input("Enter Custom Dose (mg/kg)", min_value=0.00, max_value=2.00, value=None) if dose_selection == "Custom..." else dose_selection
+        dose_rate = st.number_input("Enter Custom Dose (mg/kg)", min_value=0.00, max_value=0.12, value=None) if dose_selection == "Custom..." else dose_selection
     with col2:
         real_weight = st.number_input("Patient Weight (kg)", min_value=0.0, max_value=250.0, value=None, format="%g", placeholder="Enter weight...")
-        flow_rate = st.selectbox("Pump Flow Rate (mL/day)", options=[1.4, 1.3, 1.2, 1.1], index=1, format_func=lambda x: f"{x} mL/day")
+        flow_selection = st.selectbox("Pump Flow Rate (mL/day)", options=[1.4, 1.3, 1.2, 1.1, ["Custom..."], index=1, format_func=lambda x: f"{x} mL/day")
+        flow_rate = st.number_input("Enter Custom Flow Rate (mL/day)", min_value=0.00, max_value=2.00, value=None) if dose_selection == "Custom..." else flow_selection
     with col3:
         height_cm = st.number_input("Patient Height (cm)", min_value=0.0, max_value=250.0, value=None, format="%g", placeholder="Enter height...")
         st.metric(label="Pump Volume (Fixed)", value=f"{int(pump_volume)} mL")
@@ -305,9 +306,9 @@ def render_carboplatin_calculator():
     with col1:
         st.subheader("Patient Demographics")
         gender = st.radio("Patient Gender", ["Male", "Female"], horizontal=True)
-        age = st.number_input("Age (years)", min_value=1, max_value=120, value=None, step=1, format="%g")
-        weight = st.number_input("Patient Weight (kg)", min_value=1.0, max_value=300.0, value=None, step=1.0, format="%g")
-        height = st.number_input("Patient Height (cm)", min_value=50.0, max_value=250.0, value=None, step=1.0, format="%g")
+        age = st.number_input("Patient Age (years)", min_value=1, max_value=120, value=None, step=1, format="%g")
+        weight = st.number_input("Patient Weight (kg)", min_value=1.0, max_value=300.0, value=None, format="%g")
+        height = st.number_input("Patient Height (cm)", min_value=50.0, max_value=250.0, value=None, format="%g")
 
     with col2:
         st.subheader("Clinical Parameters")
