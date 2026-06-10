@@ -66,13 +66,14 @@ st.sidebar.markdown("## 🧮 Oncology Clinical Suite")
 st.sidebar.markdown('<p style="font-size: 0.85rem; font-weight: 500; margin-bottom: 0px;">Select a calculator below:</p>', unsafe_allow_html=True)
 st.sidebar.markdown("---")
 
-# Navigation Button Matrix
+# Navigation Button Matrix with Instant State Rerun Triggers
 if st.sidebar.button(
     "🧪 SMARTeZ Pump Calculator", 
     use_container_width=True, 
     type="primary" if st.session_state.active_calculator == "5-FU" else "secondary"
 ):
     st.session_state.active_calculator = "5-FU"
+    st.rerun()
 
 if st.sidebar.button(
     "💉 HAI Pump Calculator", 
@@ -80,6 +81,7 @@ if st.sidebar.button(
     type="primary" if st.session_state.active_calculator == "FUDR" else "secondary"
 ):
     st.session_state.active_calculator = "FUDR"
+    st.rerun()
 
 if st.sidebar.button(
     "💊 Carboplatin AUC Calculator", 
@@ -87,6 +89,7 @@ if st.sidebar.button(
     type="primary" if st.session_state.active_calculator == "Carboplatin" else "secondary"
 ):
     st.session_state.active_calculator = "Carboplatin"
+    st.rerun()
 
 if st.sidebar.button(
     "📏 Weight & BSA", 
@@ -94,9 +97,10 @@ if st.sidebar.button(
     type="primary" if st.session_state.active_calculator == "BSA" else "secondary"
 ):
     st.session_state.active_calculator = "BSA"
+    st.rerun()
 
 st.sidebar.markdown("---")
-st.sidebar.caption("v2.3.1 | Clinical Decision Support Tool")
+st.sidebar.caption("v2.3.2 | Clinical Decision Support Tool")
 
 
 # ==============================================================================
