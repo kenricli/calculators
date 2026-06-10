@@ -390,7 +390,6 @@ elif st.session_state.active_calculator == "Carboplatin":
         with res_col2:
             st.markdown("**Carboplatin Dose**")
             st.markdown(f"<h2 style='color: #FF4B4B; margin-top: -10px;'>{carboplatin_dose:.0f} mg</h2>", unsafe_allow_html=True)
-            st.markdown("---")
 
         with res_col3:
             st.metric(label="Patient BMI", value=f"{format_trailing(bmi)} kg/m²")
