@@ -57,30 +57,46 @@ def format_trailing(value, precision=1):
 
 
 # ==============================================================================
-# 🔀 NAVIGATION SETUP
+# 🔀 NAVIGATION STATE & SIDEBAR
 # ==============================================================================
-# Setup clean options map for readability
-CALC_OPTIONS = {
-    "5-FU": "🧪 SMARTeZ Pump Calculator",
-    "FUDR": "💉 HAI Pump Calculator",
-    "Carboplatin": "💊 Carboplatin AUC Calculator",
-    "BSA": "📏 Weight & BSA Matrix"
-}
+if "active_calculator" not in st.session_state:
+    st.session_state.active_calculator = "5-FU"
 
 st.sidebar.markdown("## 🧮 Oncology Clinical Suite")
-st.sidebar.markdown('<p style="font-size: 0.85rem; font-weight: 500; margin-bottom: 0px;">Select a calculator:</p>', unsafe_allow_html=True)
+st.sidebar.markdown('<p style="font-size: 0.85rem; font-weight: 500; margin-bottom: 0px;">Select a calculator below:</p>', unsafe_allow_html=True)
 st.sidebar.markdown("---")
 
-# Use a native radio input component for automated callback rerun routing
-selected_label = st.sidebar.radio(
-    label="Navigation Menu",
-    options=list(CALC_OPTIONS.values()),
-    label_visibility="collapsed"
-)
-active_calc = [k for k, v in CALC_OPTIONS.items() if v == selected_label][0]
+# Navigation Button Matrix
+if st.sidebar.button(
+    "🧪 SMARTeZ Pump Calculator", 
+    use_container_width=True, 
+    type="primary" if st.session_state.active_calculator == "5-FU" else "secondary"
+):
+    st.session_state.active_calculator = "5-FU"
+
+if st.sidebar.button(
+    "💉 HAI Pump Calculator", 
+    use_container_width=True, 
+    type="primary" if st.session_state.active_calculator == "FUDR" else "secondary"
+):
+    st.session_state.active_calculator = "FUDR"
+
+if st.sidebar.button(
+    "💊 Carboplatin AUC Calculator", 
+    use_container_width=True, 
+    type="primary" if st.session_state.active_calculator == "Carboplatin" else "secondary"
+):
+    st.session_state.active_calculator = "Carboplatin"
+
+if st.sidebar.button(
+    "📏 Weight & BSA", 
+    use_container_width=True, 
+    type="primary" if st.session_state.active_calculator == "BSA" else "secondary"
+):
+    st.session_state.active_calculator = "BSA"
 
 st.sidebar.markdown("---")
-st.sidebar.caption("v2.3.0 | Clinical Decision Support Tool")
+st.sidebar.caption("v2.3.1 | Clinical Decision Support Tool")
 
 
 # ==============================================================================
@@ -445,12 +461,12 @@ def render_bsa_calculator():
     st.caption("Disclaimer: This tool is for educational purposes only and should not replace professional clinical judgment.")
 
 
-# --- Dynamic View Routing Engine ---
-if active_calc == "5-FU":
+# --- Structural Layout Router ---
+if st.session_state.active_calculator == "5-FU":
     render_5fu_calculator()
-elif active_calc == "FUDR":
+elif st.session_state.active_calculator == "FUDR":
     render_fudr_calculator()
-elif active_calc == "Carboplatin":
+elif st.session_state.active_calculator == "Carboplatin":
     render_carboplatin_calculator()
-elif active_calc == "BSA":
+elif st.session_state.active_calculator == "BSA":
     render_bsa_calculator()
