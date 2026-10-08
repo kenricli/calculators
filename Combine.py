@@ -286,7 +286,7 @@ def render_fudr_calculator():
             "Weight (kg)": f"{w:.1f}",
             "Daily Dose (mg/day)": f"{d_d:.2f}",
             "Final Rounded Dose (mg)": f"{f_d} mg",
-            "Active Dosing Weight": "✅ Active" if is_active else "—"
+            "": "✅ Active" if is_active else "—"
         })
     
     df_comparison = pd.DataFrame(table_data)
