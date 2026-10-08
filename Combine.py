@@ -292,9 +292,8 @@ def render_fudr_calculator():
     })
     st.dataframe(df_components, hide_index=True, use_container_width=True)
 
-    # --- WEIGHT COMPARISON TABLE WITH HOVER EQUATIONS ---
+    # --- WEIGHT COMPARISON TABLE ---
     st.subheader("📊 Dosing Comparison by Body Weight Type")
-    st.caption("💡 Hover over each Body Weight Type name to view its respective equation.")
     
     def get_metrics_for_wt(wt):
         d_dose = dose_rate * wt
@@ -308,71 +307,24 @@ def render_fudr_calculator():
         ("Adjusted Body Weight (AdjBW)", adjbw),
         ("Average Body Weight (ABW)", abw)
     ]
-
-    weight_equations = {
-        "Actual Body Weight": "Measured patient weight entered above",
-        "Ideal Body Weight (IBW)": "Devine Formula (Height & Gender dependent)",
-        "Adjusted Body Weight (AdjBW)": "AdjBW = IBW + 0.4 × (Actual Weight - IBW)",
-        "Average Body Weight (ABW)": "ABW = (IBW + Actual Weight) / 2"
-    }
-
-    # Render interactive HTML table with CSS tooltips
-    html_table = """
-    <style>
-    .weight-comp-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-family: var(--font);
-        font-size: 14px;
-        margin-bottom: 1rem;
-    }
-    .weight-comp-table th, .weight-comp-table td {
-        padding: 10px 12px;
-        text-align: left;
-        border-bottom: 1px solid rgba(250, 250, 250, 0.1);
-    }
-    .weight-comp-table th {
-        font-weight: 600;
-    }
-    .wt-tooltip {
-        cursor: help;
-        text-decoration: underline dotted rgba(250, 250, 250, 0.5);
-    }
-    </style>
-    <table class="weight-comp-table">
-        <thead>
-            <tr>
-                <th>Body Weight Type</th>
-                <th>Weight (kg)</th>
-                <th>Daily Dose (mg/day)</th>
-                <th>Final Rounded Dose (mg)</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-    """
     
+    table_data = []
     for label, wt_val in wt_types:
         w, d_d, f_d = get_metrics_for_wt(wt_val)
-        is_active = (label == active_label)
-        active_str = "✅ Active" if is_active else "—"
-        eq_text = weight_equations.get(label, "")
         
-        html_table += f"""
-            <tr>
-                <td><span class="wt-tooltip" title="{eq_text}">{label} ℹ️</span></td>
-                <td>{w:.1f}</td>
-                <td>{d_d:.1f}</td>
-                <td>{f_d} mg</td>
-                <td>{active_str}</td>
-            </tr>
-        """
+        # Check if this row matches the currently active dosing weight
+        is_active = (label == active_label)
+            
+        table_data.append({
+            "Body Weight Type": label,
+            "Weight (kg)": f"{w:.1f}",
+            "Daily Dose (mg/day)": f"{d_d:.1f}",
+            "Final Rounded Dose (mg)": f"{f_d} mg",
+            "": "✅ Active" if is_active else "—"
+        })
     
-    html_table += """
-        </tbody>
-    </table>
-    """
-    st.markdown(html_table, unsafe_allow_html=True)
+    df_comparison = pd.DataFrame(table_data)
+    st.dataframe(df_comparison, hide_index=True, use_container_width=True)
     st.divider()
     # -------------------------------
 
