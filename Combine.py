@@ -292,7 +292,7 @@ def render_fudr_calculator():
     })
     st.dataframe(df_components, hide_index=True, use_container_width=True)
 
-    # --- WEIGHT COMPARISON TABLE WITH TOOLTIPS ---
+    # --- WEIGHT COMPARISON TABLE ---
     st.subheader("📊 Dosing Comparison by Body Weight Type")
     
     def get_metrics_for_wt(wt):
@@ -302,58 +302,36 @@ def render_fudr_calculator():
         return wt, d_dose, fin_dose
 
     wt_types = [
-        ("Actual Body Weight", real_weight, "Measured patient body weight (input value)"),
-        ("Ideal Body Weight (IBW)", ibw, "Calculated via Devine formula based on patient gender and height"),
-        ("Adjusted Body Weight (AdjBW)", adjbw, "IBW + 0.4 × (Actual Weight − IBW)"),
-        ("Average Body Weight (ABW)", abw, "(IBW + Actual Weight) / 2")
+        ("Actual Body Weight", real_weight),
+        ("Ideal Body Weight (IBW)", ibw),
+        ("Adjusted Body Weight (AdjBW)", adjbw),
+        ("Average Body Weight (ABW)", abw)
     ]
     
-    html_table = """
-    <table style="width:100%; border-collapse: collapse; font-family: sans-serif; font-size: 14px;">
-        <thead>
-            <tr style="border-bottom: 2px solid rgba(250,250,250,0.2); text-align: left;">
-                <th style="padding: 8px;">Body Weight Type</th>
-                <th style="padding: 8px;">Weight (kg)</th>
-                <th style="padding: 8px;">Daily Dose (mg/day)</th>
-                <th style="padding: 8px;">Final Rounded Dose (mg)</th>
-                <th style="padding: 8px; text-align: center;">Status</th>
-            </tr>
-        </thead>
-        <tbody>
-    """
-    
-    for label, wt_val, eq_desc in wt_types:
+    table_data = []
+    for label, wt_val in wt_types:
         w, d_d, f_d = get_metrics_for_wt(wt_val)
+        
+        # Check if this row matches the currently active dosing weight
         is_active = (label == active_label)
-        active_str = "✅ Active" if is_active else "—"
-        row_bg = "background-color: rgba(255, 255, 255, 0.05);" if is_active else ""
-        
-        html_table += f"""
-            <tr style="border-bottom: 1px solid rgba(250,250,250,0.1); {row_bg}">
-                <td style="padding: 8px;">
-                    {label} 
-                    <span title="{eq_desc}" style="cursor: help; margin-left: 4px; color: #4FA3F7;">ℹ️</span>
-                </td>
-                <td style="padding: 8px;">{w:.1f} kg</td>
-                <td style="padding: 8px;">{d_d:.1f}</td>
-                <td style="padding: 8px;">{f_d} mg</td>
-                <td style="padding: 8px; text-align: center;">{active_str}</td>
-            </tr>
-        """
-        
-    html_table += """
-        </tbody>
-    </table>
-    """
+            
+        table_data.append({
+            "Body Weight Type": label,
+            "Weight (kg)": f"{w:.1f}",
+            "Daily Dose (mg/day)": f"{d_d:.1f}",
+            "Final Rounded Dose (mg)": f"{f_d} mg",
+            "": "✅ Active" if is_active else "—"
+        })
     
-    st.markdown(html_table, unsafe_allow_html=True)
+    df_comparison = pd.DataFrame(table_data)
+    st.dataframe(df_comparison, hide_index=True, use_container_width=True)
     st.divider()
     # -------------------------------
 
     clean_admin_text = (
-        f"1. Floxuridine dose: {dose_rate:g} mg/kg/day × {dosing_weight:.1f} kg = Daily dose of Floxuridine: {daily_dose:.2f} mg/day\n"
-        f"2. Daily dose of Floxuridine: {daily_dose:.2f} mg/day / flow rate: {flow_rate:g} mL/day = pump concentration: {pump_concentration:.2f} mg/mL\n"
-        f"3. Pump concentration: {pump_concentration:.2f} mg/mL × pump volume: {int(pump_volume)} mL = total dose of FLOXURIDINE: {final_fudr_dose} mg (rounded to closest 5 mg)\n"
+        f"1. Floxuridine dose: {dose_rate:g} mg/kg/day × {dosing_weight:.1f} kg = Daily dose of Floxuridine: {daily_dose:.2f} mg/day\\n"
+        f"2. Daily dose of Floxuridine: {daily_dose:.2f} mg/day / flow rate: {flow_rate:g} mL/day = pump concentration: {pump_concentration:.2f} mg/mL\\n"
+        f"3. Pump concentration: {pump_concentration:.2f} mg/mL × pump volume: {int(pump_volume)} mL = total dose of FLOXURIDINE: {final_fudr_dose} mg (rounded to closest 5 mg)\\n"
         f"4. Please insert total dose into Floxuridine dosing field above"
     )
 
