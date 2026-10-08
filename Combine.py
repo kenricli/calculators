@@ -318,7 +318,7 @@ def render_fudr_calculator():
         table_data.append({
             "Body Weight Type": label,
             "Weight (kg)": f"{w:.1f}",
-            "Daily Dose (mg/day)": f"{d_d:.2f}",
+            "Daily Dose (mg/day)": f"{d_d:.1f}",
             "Final Rounded Dose (mg)": f"{f_d} mg",
             "": "✅ Active" if is_active else "—"
         })
@@ -355,7 +355,7 @@ def render_fudr_calculator():
         st.components.v1.html(html_button, height=45)
 
     admin_text = (
-        f"1. **Floxuridine dose:** {dose_rate:g} mg/kg/day × {dosing_weight:g} kg = **Daily dose of Floxuridine:** {daily_dose:.2f} mg/day  \n"
+        f"1. **Floxuridine dose:** {dose_rate:g} mg/kg/day × {dosing_weight:.1f} kg = **Daily dose of Floxuridine:** {daily_dose:.2f} mg/day  \n"
         f"2. **Daily dose of Floxuridine:** {daily_dose:.2f} mg/day / **flow rate:** {flow_rate:g} mL/day = **pump concentration:** {pump_concentration:.2f} mg/mL  \n"
         f"3. **Pump concentration:** {pump_concentration:.2f} mg/mL × **pump volume:** {int(pump_volume)} mL = **total dose of FLOXURIDINE:** {final_fudr_dose} mg (rounded to closest 5 mg)  \n"
         f"4. Please insert total dose into Floxuridine dosing field above"
