@@ -276,7 +276,7 @@ def render_fudr_calculator():
         table_data.append({
             "Body Weight Type": label,
             "Weight (kg)": f"{w:.1f}",
-            "Daily Dose (mg/day)": f"{d_d:.2f}",
+            "Daily Dose (mg/day)": f"{d_d:.1f}",
             "Final Rounded Dose (mg)": f"{f_d} mg"
         })
     
