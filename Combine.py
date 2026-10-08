@@ -283,7 +283,7 @@ def render_fudr_calculator():
         st.info(f"ℹ️ Manually overridden to use **{active_label}**: {dosing_weight:.1f} kg.")
 
     m_col1, m_col2 = st.columns(2)
-    m_col1.metric(label="Calculated FUDR Dose", value=f"{raw_fudr_dose:.2f} mg")
+    m_col1.metric(label="Calculated FUDR Dose", value=f"{raw_fudr_dose:.1f} mg")
     m_col2.metric(label="Final FUDR Dose (Nearest 5 mg)", value=f"{final_fudr_dose} mg")
 
     df_components = pd.DataFrame({
