@@ -304,8 +304,8 @@ def render_fudr_calculator():
     wt_types = [
         ("Actual Body Weight", real_weight),
         ("Ideal Body Weight (IBW)", ibw),
-        ("Average Body Weight (ABW)", abw),
-        ("Adjusted Body Weight (AdjBW)", adjbw)
+        ("Adjusted Body Weight (AdjBW)", adjbw),
+        ("Average Body Weight (ABW)", abw)
     ]
     
     table_data = []
