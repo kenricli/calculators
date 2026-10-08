@@ -230,6 +230,7 @@ def render_fudr_calculator():
     ibw = calculate_ibw(gender, height_cm)
     is_overweight = real_weight > (1.35 * ibw)
     abw = (ibw + real_weight) / 2.0
+    adjbw = ibw + 0.4 * (real_weight - ibw)
     dosing_weight = abw if is_overweight else real_weight
     
     daily_dose = dose_rate * dosing_weight
@@ -265,7 +266,8 @@ def render_fudr_calculator():
     wt_types = [
         ("Actual Body Weight", real_weight),
         ("Ideal Body Weight (IBW)", ibw),
-        ("Average Body Weight (ABW)", abw)
+        ("Average Body Weight (ABW)", abw),
+        ("Adjusted Body Weight (AdjBW)", adjbw)
     ]
     
     table_data = []
