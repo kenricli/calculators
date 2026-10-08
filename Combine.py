@@ -312,7 +312,7 @@ def render_fudr_calculator():
         st.components.v1.html(html_button, height=45)
 
     admin_text = (
-        f"1. **Floxuridine dose:** {dose_rate:g} mg/kg/day × {dosing_weight:g} kg = **Daily dose of Floxuridine:** {daily_dose:.2f} mg/day  \n"
+        f"1. **Floxuridine dose:** {dose_rate:g} mg/kg/day × {dosing_weight:.1f} kg = **Daily dose of Floxuridine:** {daily_dose:.2f} mg/day  \n"
         f"2. **Daily dose of Floxuridine:** {daily_dose:.2f} mg/day / **flow rate:** {flow_rate:g} mL/day = **pump concentration:** {pump_concentration:.2f} mg/mL  \n"
         f"3. **Pump concentration:** {pump_concentration:.2f} mg/mL × **pump volume:** {int(pump_volume)} mL = **total dose of FLOXURIDINE:** {final_fudr_dose} mg (rounded to closest 5 mg)  \n"
         f"4. Please insert total dose into Floxuridine dosing field above"
