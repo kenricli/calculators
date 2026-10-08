@@ -256,13 +256,11 @@ def render_fudr_calculator():
     # --- WEIGHT COMPARISON TABLE ---
     st.subheader("📊 Dosing Comparison by Body Weight Type")
     
-    # Helper to calculate metrics for any given weight
     def get_metrics_for_wt(wt):
         d_dose = dose_rate * wt
-        p_conc = d_dose / flow_rate
         raw_dose = (d_dose * pump_volume) / flow_rate
         fin_dose = round(raw_dose / 5) * 5
-        return wt, d_dose, p_conc, raw_dose, fin_dose
+        return wt, d_dose, fin_dose
 
     wt_types = [
         ("Actual Body Weight", real_weight),
@@ -272,13 +270,11 @@ def render_fudr_calculator():
     
     table_data = []
     for label, wt_val in wt_types:
-        w, d_d, p_c, r_d, f_d = get_metrics_for_wt(wt_val)
+        w, d_d, f_d = get_metrics_for_wt(wt_val)
         table_data.append({
             "Body Weight Type": label,
             "Weight (kg)": f"{w:.1f}",
             "Daily Dose (mg/day)": f"{d_d:.2f}",
-            "Pump Conc. (mg/mL)": f"{p_c:.2f}",
-            "Raw Dose (mg)": f"{r_d:.2f}",
             "Final Rounded Dose (mg)": f"{f_d} mg"
         })
     
