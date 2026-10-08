@@ -227,23 +227,61 @@ def render_fudr_calculator():
         st.caption("Disclaimer: This tool is for educational purposes only and should not replace professional clinical judgment.")
         return
 
+    # Calculate baseline weights
     ibw = calculate_ibw(gender, height_cm)
     is_overweight = real_weight > (1.35 * ibw)
     abw = (ibw + real_weight) / 2.0
     adjbw = ibw + 0.4 * (real_weight - ibw)
-    dosing_weight = abw if is_overweight else real_weight
     
+    # Determine default auto-weight
+    auto_weight_label = "Average Body Weight (ABW)" if is_overweight else "Actual Body Weight"
+    auto_dosing_weight = abw if is_overweight else real_weight
+
+    st.subheader("📋 Order & Compounding Summary")
+    
+    # Weight Override Dropdown
+    override_option = st.selectbox(
+        "Dosing Weight Selection (Override Available)",
+        options=[
+            f"Auto (Default: {auto_weight_label})",
+            "Actual Body Weight",
+            "Ideal Body Weight (IBW)",
+            "Average Body Weight (ABW)",
+            "Adjusted Body Weight (AdjBW)"
+        ],
+        index=0
+    )
+
+    # Resolve active dosing weight based on selection
+    if override_option == "Actual Body Weight":
+        dosing_weight = real_weight
+        active_label = "Actual Body Weight"
+    elif override_option == "Ideal Body Weight (IBW)":
+        dosing_weight = ibw
+        active_label = "Ideal Body Weight (IBW)"
+    elif override_option == "Average Body Weight (ABW)":
+        dosing_weight = abw
+        active_label = "Average Body Weight (ABW)"
+    elif override_option == "Adjusted Body Weight (AdjBW)":
+        dosing_weight = adjbw
+        active_label = "Adjusted Body Weight (AdjBW)"
+    else:  # Auto
+        dosing_weight = auto_dosing_weight
+        active_label = auto_weight_label
+
     daily_dose = dose_rate * dosing_weight
     pump_concentration = daily_dose / flow_rate
     raw_fudr_dose = (dose_rate * dosing_weight * pump_volume) / flow_rate
     final_fudr_dose = round(raw_fudr_dose / 5) * 5
     
-    if is_overweight:
-        st.warning(f"⚠️ Patient is >35% over IBW. Using **Average Body Weight**: {dosing_weight:.1f} kg.")
+    if override_option.startswith("Auto"):
+        if is_overweight:
+            st.warning(f"⚠️ Patient is >35% over IBW. Auto-selected **Average Body Weight**: {dosing_weight:.1f} kg.")
+        else:
+            st.info(f"✅ Auto-selected **Actual Body Weight**: {real_weight} kg.")
     else:
-        st.info(f"✅ Using **Actual Body Weight**: {real_weight} kg.")
-            
-    st.subheader("📋 Order & Compounding Summary")
+        st.info(f"ℹ️ Manually overridden to use **{active_label}**: {dosing_weight:.1f} kg.")
+
     m_col1, m_col2 = st.columns(2)
     m_col1.metric(label="Calculated FUDR Dose", value=f"{raw_fudr_dose:.2f} mg")
     m_col2.metric(label="Final FUDR Dose (Nearest 5 mg)", value=f"{final_fudr_dose} mg")
@@ -274,19 +312,15 @@ def render_fudr_calculator():
     for label, wt_val in wt_types:
         w, d_d, f_d = get_metrics_for_wt(wt_val)
         
-        # Check if this row matches the active dosing calculation weight logic
-        is_active = False
-        if not is_overweight and label == "Actual Body Weight":
-            is_active = True
-        elif is_overweight and label == "Average Body Weight (ABW)":
-            is_active = True
+        # Check if this row matches the currently active dosing weight
+        is_active = (label == active_label)
             
         table_data.append({
             "Body Weight Type": label,
             "Weight (kg)": f"{w:.1f}",
             "Daily Dose (mg/day)": f"{d_d:.2f}",
             "Final Rounded Dose (mg)": f"{f_d} mg",
-            "": "✅ Active" if is_active else "—"
+            "Active Dosing Weight": "✅ Active" if is_active else "—"
         })
     
     df_comparison = pd.DataFrame(table_data)
