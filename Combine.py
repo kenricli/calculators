@@ -229,7 +229,8 @@ def render_fudr_calculator():
 
     ibw = calculate_ibw(gender, height_cm)
     is_overweight = real_weight > (1.35 * ibw)
-    dosing_weight = (ibw + real_weight) / 2.0 if is_overweight else real_weight
+    abw = (ibw + real_weight) / 2.0
+    dosing_weight = abw if is_overweight else real_weight
     
     daily_dose = dose_rate * dosing_weight
     pump_concentration = daily_dose / flow_rate
@@ -240,7 +241,7 @@ def render_fudr_calculator():
         st.warning(f"⚠️ Patient is >35% over IBW. Using **Average Body Weight**: {dosing_weight:.1f} kg.")
     else:
         st.info(f"✅ Using **Actual Body Weight**: {real_weight} kg.")
-              
+            
     st.subheader("📋 Order & Compounding Summary")
     m_col1, m_col2 = st.columns(2)
     m_col1.metric(label="Calculated FUDR Dose", value=f"{raw_fudr_dose:.2f} mg")
@@ -251,6 +252,40 @@ def render_fudr_calculator():
         "Target Protocol Dose / Volume": [f"{final_fudr_dose} mg", specs["dex"], specs["heparin"], f"QS to total {int(pump_volume)} mL"]
     })
     st.dataframe(df_components, hide_index=True, use_container_width=True)
+
+    # --- WEIGHT COMPARISON TABLE ---
+    st.subheader("📊 Dosing Comparison by Body Weight Type")
+    
+    # Helper to calculate metrics for any given weight
+    def get_metrics_for_wt(wt):
+        d_dose = dose_rate * wt
+        p_conc = d_dose / flow_rate
+        raw_dose = (d_dose * pump_volume) / flow_rate
+        fin_dose = round(raw_dose / 5) * 5
+        return wt, d_dose, p_conc, raw_dose, fin_dose
+
+    wt_types = [
+        ("Actual Body Weight", real_weight),
+        ("Ideal Body Weight (IBW)", ibw),
+        ("Average Body Weight (ABW)", abw)
+    ]
+    
+    table_data = []
+    for label, wt_val in wt_types:
+        w, d_d, p_c, r_d, f_d = get_metrics_for_wt(wt_val)
+        table_data.append({
+            "Body Weight Type": label,
+            "Weight (kg)": f"{w:.1f}",
+            "Daily Dose (mg/day)": f"{d_d:.2f}",
+            "Pump Conc. (mg/mL)": f"{p_c:.2f}",
+            "Raw Dose (mg)": f"{r_d:.2f}",
+            "Final Rounded Dose (mg)": f"{f_d} mg"
+        })
+    
+    df_comparison = pd.DataFrame(table_data)
+    st.dataframe(df_comparison, hide_index=True, use_container_width=True)
+    st.divider()
+    # -------------------------------
 
     clean_admin_text = (
         f"1. Floxuridine dose: {dose_rate:g} mg/kg/day × {dosing_weight:g} kg = Daily dose of Floxuridine: {daily_dose:.2f} mg/day\\n"
